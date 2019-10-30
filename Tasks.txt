@@ -3,3 +3,5 @@
 Git
 github.com
 githowto.com
+
+2. Сделать тестовую прогамму для FreeFem
