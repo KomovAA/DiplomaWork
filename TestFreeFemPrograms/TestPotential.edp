@@ -1,0 +1,41 @@
+// Parameters
+real kc2 = 1.;
+func g = y*(1.-y);
+
+// Mesh
+real a = 10.;
+border a0(t=0., 1.){x= a*t; y=0.;  label=0;}
+border a1(t=0., 1.){x= a;   y=a*t; label=1;}
+border a2(t=1., 0.){x=a*t;  y=a;   label=2;}
+border a3(t=1., 0.){x=0.;   y=a*t; label=3;}
+
+
+real b = 2.;
+border b0(t=0., 1.){x= (a-b)/2. + b*t;  y=(a-b)/2.;       label=4;}
+border b1(t=0., 1.){x= (a+b)/2;         y=(a-b)/2. + b*t; label=4;}
+border b2(t=1., 0.){x= (a-b)/2. + b*t;  y=(a+b)/2.;       label=4;}
+border b3(t=1., 0.){x= (a-b)/2.;        y=(a-b)/2. + b*t; label=4;}
+
+
+mesh Th = buildmesh(a0(20) + a1(20) + a2(20) + a3(20) + b0(-20) + b1(-20) + b2(-20) + b3(-20));
+plot(Th,wait=1);
+
+// Fespace
+fespace Vh(Th, P1);
+Vh phi, v;
+
+// Solve
+solve sound(phi, v)
+   = int2d(Th)(
+      - dx(phi)*dx(v)
+      - dy(phi)*dy(v)
+   )
+   + on(0,phi=0.)
+   + on(1,phi=-1.)
+   + on(2,phi=0.)
+   + on(3,phi=1.)
+   + on(4,phi=0.)
+   ;
+
+// Plot
+plot(phi, wait=1, value=1, fill=1);
