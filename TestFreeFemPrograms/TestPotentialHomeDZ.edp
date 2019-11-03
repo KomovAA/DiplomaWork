@@ -1,0 +1,42 @@
+// Parametrs (Параметры)
+int k =4.;
+// Mesh (определение границ (сетки))
+real a = 10.;
+border a0(t=0., 1.){x= a*t; y=0.;  label=0;}
+border a1(t=0., 1.){x= a;   y=a*t; label=1;}
+border a2(t=1., 0.){x=a*t;  y=a;   label=2;}
+border a3(t=1., 0.){x=0.;   y=a*t; label=3;}
+
+
+real b = 2.;
+border b0(t=0., 1.){x= (a-b)/2. + b*t;  y=(a-b)/2.;       label=4;}
+border b1(t=0., 1.){x= (a+b)/2;         y=(a-b)/2. + b*t; label=4;}
+border b2(t=1., 0.){x= (a-b)/2. + b*t;  y=(a+b)/2.;       label=4;}
+border b3(t=1., 0.){x= (a-b)/2.;        y=(a-b)/2. + b*t; label=4;}
+
+//Определение размеров сетки
+mesh Th = buildmesh(a0(20) + a1(20) + a2(20) + a3(20) + b0(-20) + b1(-20) + b2(-20) + b3(-20));
+// Отображение полученного графика с задержкой 1
+plot(Th,wait=1);
+
+// Fespace (пространство конечных элементов определенных над Vh)
+fespace Vh(Th, P1);
+Vh e, v;
+
+// Solve (расчет по формуле)
+solve sound(e, v)
+   = int2d(Th)
+   (
+       dx(e)*dx(v)
+      + dy(e)*dy(v)
+	  + k^2 * e // Без этой строчки запускается
+   )
+   + on(0,e=0.)
+   + on(1,e=1.*y)
+   + on(2,e=0.)
+   + on(3,e=1.*y)
+   + on(4,e=0.)
+   ;
+
+// Plot
+plot(e, wait=1, value=1, fill=1);
