@@ -27,9 +27,9 @@ Vh e, v;
 solve sound(e, v)
    = int2d(Th)
    (
-       dx(e)*dx(v)
-      + dy(e)*dy(v)
-	  + k^2 * e // Без этой строчки запускается
+       - dx(e)*dx(v)
+      - dy(e)*dy(v)
+	  + k^2 * e * v 
    )
    + on(0,e=0.)
    + on(1,e=1.*y)
