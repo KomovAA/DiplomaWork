@@ -1,0 +1,61 @@
+// Parametrs (Параметры)
+int k =4.;
+// Mesh (определение границ (сетки))
+real a = 10.;
+border a0(t=0., 1.){x= a*t; y=0.;  label=0;}
+border a1(t=0., 1.){x= a;   y=a*t; label=1;}
+border a2(t=1., 0.){x=a*t;  y=a;   label=2;}
+border a3(t=1., 0.){x=0.;   y=a*t; label=3;}
+
+
+real b = 2.;
+border b0(t=0., 1.){x= (a-b)/2. + b*t;  y=(a-b)/2.;       label=4;}
+border b1(t=0., 1.){x= (a+b)/2;         y=(a-b)/2. + b*t; label=5;}
+border b2(t=1., 0.){x= (a-b)/2. + b*t;  y=(a+b)/2.;       label=4;}
+border b3(t=1., 0.){x= (a-b)/2.;        y=(a-b)/2. + b*t; label=5;}
+
+border s0(t=0., 2.*pi){x=1.*cos(t) + a/2.; y=1.*sin(t) + a/2.;}
+
+//Определение размеров сетки
+mesh Th = buildmesh(a0(40) + a1(40) + a2(40) + a3(40) + s0(-100));
+// Отображение полученного графика с задержкой 1
+plot(Th,wait=1);
+
+/////// Fespace (пространство конечных элементов определенных над Vh)
+fespace Vh(Th, P1);
+Vh Ex, ex;
+Vh Ey, ey;
+Vh Fi;
+////// Solve (расчет по формуле)
+real alfa = Fi - pi/2;
+real r = -x*cos(alfa)/y*sin(alfa);
+real Et = r*Ey*Ex;
+real Etx = Ex*Et;
+real Ety = Ey*Et;
+
+solve sound([Ex, Ey],[ex,ey])
+   = int2d(Th)
+   (
+      - dx(Ex)*dx(ex)
+      - dy(Ex)*dy(ex)
+	  - dx(Ey)*dx(ey)
+	  - dy(Ey)*dy(ey)
+	  + k^2 * Ex * ex
+	  + k^2 * Ey * ey	  
+   )
+   + int1d(Th, s0)
+   (
+      (Ex*ex*Etx)+(Ey*ey*Ety)
+   )
+   
+   + on(0,2, Ex=0.)
+   + on(1,3, Ey=1.)
+   + on(s0, Ex = 0.,Ey =pi/18)
+   ;
+
+// Plot
+plot([Ex, Ey], wait=0, value=1);
+
+
+plot(Ex, wait=0, value=1, fill=1, WindowIndex=1);
+plot(Ey, wait=0, value=1, fill=1, WindowIndex=2);
