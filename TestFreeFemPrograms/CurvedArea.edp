@@ -1,0 +1,74 @@
+// Parametrs (Параметры)
+real k =4.;
+real w = 4.;
+real t = 0.;
+func uu = sin(2*y*pi/2)/10; // функция деформации
+func vv = cos(2*x*pi)/15; // функция деформации
+
+real coef = 1.5; // коэффициент деформации сетки
+// Mesh (определение границ (сетки))
+real a = 10.;
+border a0(t=0., 1.){x= a*t; y=0.;  label=0;}
+border a1(t=0., 1.){x= a;   y=a*t; label=1;}
+border a2(t=1., 0.){x=a*t;  y=a;   label=2;}
+border a3(t=1., 0.){x=0.;   y=a*t; label=3;}
+
+border s0(t=0., 2.*pi){x=2.*cos(t) + a/2. + coef*uu; y=4.*sin(t) + a/2. +coef*vv;}
+
+//Определение размеров сетки
+mesh Th = buildmesh(a0(40) + a1(40) + a2(40) + a3(40) + s0(-100));
+
+// Отображение полученного графика с задержкой 1
+plot(Th,wait=1);
+
+/////// Fespace (пространство конечных элементов определенных над Vh)
+fespace Vh(Th, P1);
+Vh Ex, ex;
+Vh Ey, ey;
+////// Solve (расчет по формуле)
+
+real Ey1 = cos(k * 10);
+
+solve sound(Ex,ex)
+   = int2d(Th)
+   (
+      - dx(Ex)*dx(ex)
+      - dy(Ex)*dy(ex)
+	  + k^2 * Ex * ex  
+   )
+   + on(s0, Ex = cos(k*x)* (x - 0.5*a)*(y - 0.5*a)/((x - 0.5*a)^2 + (y - 0.5*a)^2))
+   ;
+   
+   Ey = Ey + cos(k * x);
+
+
+solve sound2(Ey,ey)
+   = int2d(Th)
+   (
+	  - dx(Ey)*dx(ey)
+	  - dy(Ey)*dy(ey)
+	  + k^2 * Ey * ey	  
+   )
+
+   + on(s0, Ey = -cos(k*x)* (x - 0.5*a)^2/((x - 0.5*a)^2 + (y - 0.5*a)^2))
+   ;
+
+
+real dt = 2.* pi/ w / 100;
+for (int i=1; i < 100; i++)
+{
+    t = dt * i;
+    cout<< "Time is" << t << endl;  
+  
+
+	sound;
+    sound2;
+
+	Ey = Ey + cos(w*t - k * x);
+    // Plot
+    plot([Ex, Ey], cmm = "Time " + t*w/2/pi, wait=0, value=1);
+    //plot([Ex2, Ey], wait=0, value=1);
+}
+plot(Ex, wait=0, value=1, fill=1, WindowIndex=1);
+plot(Ey, wait=0, value=1, fill=1, WindowIndex=2);
+
