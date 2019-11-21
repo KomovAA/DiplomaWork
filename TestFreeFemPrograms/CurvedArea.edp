@@ -2,9 +2,6 @@
 real k =4.;
 real w = 4.;
 real t = 0.;
-func uu = sin(2*y*pi/2)/10; // функция деформации
-func vv = cos(2*x*pi)/15; // функция деформации
-
 real coef = 1.5; // коэффициент деформации сетки
 // Mesh (определение границ (сетки))
 real a = 10.;
@@ -13,7 +10,8 @@ border a1(t=0., 1.){x= a;   y=a*t; label=1;}
 border a2(t=1., 0.){x=a*t;  y=a;   label=2;}
 border a3(t=1., 0.){x=0.;   y=a*t; label=3;}
 
-border s0(t=0., 2.*pi){x=2.*cos(t) + a/2. + coef*uu; y=4.*sin(t) + a/2. +coef*vv;}
+border s0(t=0., 2.*pi){x=2.*cos(t) + a/2. + coef*sin(2.*(4.*sin(t) + a/2.)*pi/2.)/10.; 
+y=4.*sin(t) + a/2. +coef*cos(2.*(2.*cos(t) + a/2.)*pi)/15.;}
 
 //Определение размеров сетки
 mesh Th = buildmesh(a0(40) + a1(40) + a2(40) + a3(40) + s0(-100));
