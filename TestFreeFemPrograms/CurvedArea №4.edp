@@ -1,0 +1,93 @@
+// Parametrs (Параметры)
+real k =4.;
+real w = 4.;
+real t = 0.;
+real coef = 1.5; // коэффициент деформации сетки
+// Mesh (определение границ (сетки))
+real a = 20.;
+border a0(t=0., 1.){x= a*t; y=0.;  label=0;}
+border a1(t=0., 1.){x= a;   y=a*t; label=1;}
+border a2(t=1., 0.){x=a*t;  y=a;   label=2;}
+border a3(t=1., 0.){x=0.;   y=a*t; label=3;}
+
+//border s0(t=0., 2.*pi){x=2.*cos(t) + a/2. + coef*sin(2.*(4.*sin(t) + a/2.)*pi/2.)/10.; 
+//y=4.*sin(t) + a/2. +coef*cos(2.*(2.*cos(t) + a/2.)*pi)/15.;}
+border s0(t=0., 2.*pi){x=1.*cos(t) + a/2.; y=1.*sin(t) + a/2.;}
+
+int n = 30;
+//Определение размеров сетки
+mesh Th = buildmesh(a0(n) + a1(n) + a2(n) + a3(n) + s0(-2*n));
+
+// Отображение полученного графика с задержкой 1
+plot(Th,wait=1);
+
+/////// Fespace (пространство конечных элементов определенных над Vh)
+fespace Vh(Th, P2);
+Vh<complex> Ex, ex;
+Vh<complex> Ey, ey;
+Vh<complex> Hz, hz;
+////// Solve (расчет по формуле)
+
+t = 0;
+Vh<complex> Hz0 = exp(1i* w* t - 1i* k * x);
+
+
+solve GelmhotzEquationForH(Hz, hz)
+    = int2d(Th)
+(
+   - dx(Hz)* dx(hz)
+- dy(Hz)* dy(hz)
++ k^2 * Hz* hz 
+)
++ int1d(Th,s0)
+(
+  - dx(Hz0)* N.x* hz - dy(Hz0)* N.y* hz
+)
+-int1d (Th, 0)
+(
+ (x - a/2)/(y-a/2) * dx(Hz) * hz + ((1i* k)/(y-a/2)) * Hz * hz
+)
++int1d (Th, 2)
+(
+ (x - a/2)/(y-a/2) * dx(Hz) * hz + ((1i* k)/(y-a/2)) * Hz * hz
+)
++int1d (Th, 1)
+(
+ (y-a/2)/(x-a/2) * dy(Hz) * hz + ((1i* k)/(x-a/2)) * Hz * hz
+)
+-int1d (Th, 3)
+(
+ (y-a/2)/(x-a/2) * dy(Hz) * hz + ((1i* k)/(x-a/2)) * Hz * hz
+)
+
+;
+
+real dt = 2.* pi/ w / 20;
+
+GelmhotzEquationForH;
+
+Vh realHz, realEx, realEy;
+Vh<complex> HzInTime = 0.;
+for (int i=1; i < 100; i++)
+{
+    t = dt * i;
+    cout<< "Time is" << t << endl;  
+ 
+
+HzInTime = Hz* exp(1i * w * t) + 0*exp(1i* w* t - 1i* k * x);
+Ex = - 1i/ k * dy(HzInTime);
+Ey =   1i/ k * dx(HzInTime);
+    // Plot
+    //plot([Ex, Ey], cmm = "Time " + t*w/2/pi, wait=0, value=1);
+    //plot([Ex, Ey], wait=0, value=1, WindowIndex=1);
+realHz = real(HzInTime);
+plot(realHz, wait=0, value=1, fill = 1);
+
+realEx = real(Ex);
+realEy = real(Ey);
+ //plot([realEx, realEy], wait=0, value=1, WindowIndex=1);
+ 
+ 
+ plot(realEx, wait=0, value=1, fill=1, WindowIndex=1);
+ plot(realEy, wait=0, value=1, fill=1, WindowIndex=2);
+}
