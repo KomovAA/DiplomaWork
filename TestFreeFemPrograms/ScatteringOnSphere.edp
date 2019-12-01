@@ -1,0 +1,22 @@
+load "msh3"
+real t = 4.;
+int n = 10;
+
+real a = 2.;
+border a0(t=0., 1.){x= a*t; y=0.;  label=0;}
+border a1(t=0., 1.){x= a;   y=a*t; label=1;}
+border a2(t=1., 0.){x=a*t;  y=a;   label=2;}
+border a3(t=1., 0.){x=0.;   y=a*t; label=3;}
+
+border s0(t=0., 2.*pi){x=0.5*cos(t) + a/2.; y=0.5*sin(t) + a/2.;}
+
+mesh Th2 = buildmesh(a0(n) + a1(n) + a2(n) + a3(n) + s0(-2*n));
+mesh3 Th = buildlayers(Th2, 50.);
+
+
+fespace Vh(Th, P1);
+Vh u, v;
+
+
+// Plot
+plot(Th);
