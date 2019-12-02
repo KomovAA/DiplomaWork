@@ -38,7 +38,11 @@ solve GelmhotzEquationForH(Hz, hz)
 )
 + int1d(Th,s0)
 (
-  (- dx(Hz0) - 1i*k*Hz0)*hz - (dy(Hz0) - 1i*k*Hz0)*hz
+  - dx(Hz0)* N.x* hz - dy(Hz0)* N.y* hz
+)
++ int1d(Th,a0)
+(
+  -1i*k*Hz*hz
 )
  //+ on(a0, Hz0 = exp(1i*k*t))
 ;
