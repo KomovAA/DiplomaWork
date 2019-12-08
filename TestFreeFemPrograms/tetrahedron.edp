@@ -1,0 +1,34 @@
+load "msh3"
+load "medit"
+
+// Parameters
+real RR = 2;
+real HH = 2;
+
+real a = 4.;
+real b = 4.;
+func min = 0.;
+func max = 0.1;
+
+func fx = y*cos(z);
+func fy = y*sin(z);
+func fz = x;
+
+int nn=50;
+int mm=1;
+
+// 2D mesh
+border T1(t=0, HH){x=t; y=0;}
+border T2(t=1, 0){x=HH*t; y=RR*t;}
+border T3(t=0, RR){x=HH; y=t;}
+ 
+border T4(t=0, HH){x=t; y=0;}
+border T5(t=1, 0){x=HH*t; y=RR*t;}
+border T6(t=0, RR){x=HH; y=t;}
+
+mesh Th2 = buildmesh(T1(HH*nn) + T2(sqrt(HH*HH+RR*RR)*nn) + T3(RR*nn));
+//+ T4(-HH*mm) + T5(-sqrt(HH*HH+RR*RR)*mm) + T6(-RR*mm));
+
+mesh3 Th = buildlayers(Th2, 5.,zbound=[min,max],transfo=[fx,fy,fz]);
+//meshS Th = movemesh23(Th2,transfo=[fx,fy,fz]);
+plot(Th, wait=0, fill=1);
