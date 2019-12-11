@@ -66,7 +66,7 @@ func perio=[[4,y],[2,y],[1,x],[3,x]];  // to store the periodic condition
 // the intial mesh
 savemesh(Th,"sphere",[f1,f2,f3]);
 
-real R=0.2,hh=0.5/R;// hh  taille du maille sur la shere unite. 
+real R=0.2,hh=0.2/R;// hh  taille du maille sur la shere unite. 
 real vv= 1/square(hh);
 verbosity=2;
 Th=adaptmesh(Th,m11*vv,m21*vv,m22*vv,IsMetric=1,inquire=1,periodic=perio);
@@ -110,7 +110,7 @@ func perio=[[4,y],[2,y],[1,x],[3,x]];  // to store the periodic condition
 // the intial mesh
 savemesh(Th,"sphereOuter",[f1,f2,f3]);
 
-real R=1.5,hh=0.5/R;// hh  taille du maille sur la shere unite. 
+real R=1.5,hh=0.2/R;// hh  taille du maille sur la shere unite. 
 real vv= 1/square(hh);
 verbosity=2;
 Th=adaptmesh(Th,m11*vv,m21*vv,m22*vv,IsMetric=1,inquire=1,periodic=perio);
@@ -162,25 +162,19 @@ Vh <complex> Ez,ez,Ey,ey,Ex,ex;
 
 
 problem GelmhotzEquationForH3D([Ez,Ey,Ex],[ez,ey,ex])=
-     
-  - int3d(Th,2)( Grad(Ez)'* Grad(ez) )
-  
--int3d(Th,1)(Grad(Ey)'*Grad(ey)*100) 
-  -  int3d(Th,2)( Grad(Ey)'* Grad(ey) )
-  
--int3d(Th,1)( Grad(Ex)'*Grad(ex)*100) 
-  -  int3d(Th,2)( Grad(Ex)'* Grad(ex) )
-  
+  - int3d(Th,2)( Grad(Ez)'* Grad(ez))
+  - int3d(Th,2)( Grad(Ey)'* Grad(ey))
+  - int3d(Th,2)( Grad(Ex)'* Grad(ex))
   + int3d(Th) (k^2 * Ex* ex)
-   + int3d(Th) (k^2 * Ey* ey)
-    + int3d(Th) (k^2 * Ez* ez)
+  + int3d(Th) (k^2 * Ey* ey)
+  + int3d(Th) (k^2 * Ez* ez)
   + int2d(Th,11)
     (
        N.y*Ez*ex - N.z*Ey*ex
 	   )
 	 + int2d(Th,11)
 	 (
-	 N.z*Ey1*ex
+	    -N.z*Ey1*ex
 	 )
 	+ int2d(Th,11)
     (
@@ -194,6 +188,18 @@ problem GelmhotzEquationForH3D([Ez,Ey,Ex],[ez,ey,ex])=
     (
       N.x* Ey1*ez 
 	)
+	+ int2d(Th,12)
+	(
+	   -1i*k* Ez*ez
+	)
+	+ int2d(Th,12)
+	(
+	   -1i*k* Ey*ey
+	)
+	+ int2d(Th,12)
+	(
+	   -1i*k* Ex*ex
+	)
 	
   //+ int2d(Th,12)(-1i*k* Hz* hz)
  // + int2d(Th,2,-2)(vh*gn)
@@ -205,7 +211,7 @@ problem GelmhotzEquationForH3D([Ez,Ey,Ex],[ez,ey,ex])=
 Vh realHz, realEx, realEy,realEy1;
 Vh<complex> HzInTime = 0.;
 Vh<complex> Ey1InTime = 0.;
-Vh E0,yy;
+Vh E0=1.,yy;
 //HzInTime = Hz* exp(1i * w * t) + exp(1i* w* t - 1i* k * x);
 Ey1InTime = Ey + (E0 * exp (1i*(w*t - k*x)));
 //realHz = real(HzInTime);
@@ -232,7 +238,10 @@ real[int] CameraFocalPointValue = [0.0604689,-0.304636,-0.256484];
 real[int] CameraViewUpValue = [0.7198,0.502367,-0.479078];
 real[int] CutPlaneOriginValue = [-0.5,-0.55,0.0335184];
 real[int] CutPlaneNormalValue = [0,0,1];
-plot(realHz,wait=1,value=1,
+
+	Ey1InTime = Ey * exp (1i*(w*t)) + 0*(E0 * exp (1i*(w*t - k*x)));
+	realEy1 = real(Ey1InTime);
+plot(realEy1,wait=1,value=1,
 	CameraPosition=CameraPositionValue,
 	CameraFocalPoint=CameraFocalPointValue,
 	CameraViewUp=CameraViewUpValue,
@@ -247,7 +256,7 @@ for (int i=1; i < 100; i++)
     t = dt * i;
     cout<< "Time is" << t << endl;
 	
-	Ey1InTime = Ey + (E0 * exp (1i*(w*t - k*x)));
+	Ey1InTime = Ey * exp (1i*(w*t)) + 0*(E0 * exp (1i*(w*t - k*x)));
 	realEy1 = real(Ey1InTime);
 	
 	plot(realEy1,wait=0,value=1,
