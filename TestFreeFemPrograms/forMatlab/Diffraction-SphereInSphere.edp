@@ -3,6 +3,7 @@ load "msh3"
 load "tetgen"
 load "medit"
 
+include "ffmatlib.idp"
  
 // 
 meshS ThHex;
@@ -143,7 +144,7 @@ mesh3 Th = tetg(ThS,switch="pqaAAYYQ",nbofregions=2,regionlist=domaine);
 savemesh(Th,"Th-hex-sph.mesh");
 
 fespace Ph(Th,P03d);
-fespace Vh(Th,P13d);
+fespace Vh(Th,P1);
 Ph reg=region;
 
 cout << "  centre = " << reg(0,0,0) << endl;
@@ -229,6 +230,19 @@ Vh E0=1.,yy;
 Ey1InTime = Ey + (E0 * exp (1i*(w*t - k*x)));
 //realHz = real(HzInTime);
 realEy1 = real(Ey1InTime);
+
+
+
+
+///// save for the matlab
+savemesh(Th,"diffractionSInS3d.mesh");
+ffSaveVh(Th,Vh,"diffractionSInS3d_vh.txt");
+ffSaveData(Ey,"diffractionSInS3d_Ey.txt");
+/////////////////////////
+
+
+
+
 
 real f=1.;
 real gn = 1.;
