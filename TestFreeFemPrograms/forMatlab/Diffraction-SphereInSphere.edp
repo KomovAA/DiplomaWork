@@ -227,7 +227,8 @@ Vh<complex> HzInTime = 0.;
 Vh<complex> Ey1InTime = 0.;
 Vh E0=1.,yy;
 //HzInTime = Hz* exp(1i * w * t) + exp(1i* w* t - 1i* k * x);
-Ey1InTime = Ey + (E0 * exp (1i*(w*t - k*x)));
+Ey = Ey + (E0 * exp (1i*(- k*x)));
+Ey1InTime = Ey * exp (1i*(w*t));
 //realHz = real(HzInTime);
 realEy1 = real(Ey1InTime);
 
