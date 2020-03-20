@@ -84,7 +84,7 @@ func perio=[[4,y],[2,y],[1,x],[3,x]];  // to store the periodic condition
 // the intial mesh
 savemesh(Th,"sphere",[f1,f2,f3]);
 
-real R=0.2*radiusOfInnerSpher,hh=0.2/R;// hh = 0.1 - max , hh=0.5 min 
+real R=0.2*radiusOfInnerSpher,hh=0.2/R;// hh = 0.1 -> max , hh=0.5 -> min 
 real vv= 1/square(hh);
 verbosity=2;
 Th=adaptmesh(Th,m11*vv,m21*vv,m22*vv,IsMetric=1,inquire=1,periodic=perio);
