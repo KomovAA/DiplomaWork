@@ -4,9 +4,26 @@ load "tetgen"
 load "medit"
 
 include "ffmatlib.idp"
+
+
+
+real c0 = 299792458;        // speed of light in vacuum
+real mue0 = 4.*pi*1e-7;     // Permeability of free space
+real eps0 = 1./c0^2/mue0;   // Permittivity of free space
+real Z0 = sqrt(mue0/eps0);  // Impedance of free space
+
+real    lambda = 10e-6;        // vacuum wavelength (in m)
+complex ns    = 10-1i*70;   // sphere refractive index (complex)
+real radiusOfInnerSpher = 1e-6 / 2;
+
+real k0 = 2.* pi / lambda;
+complex k = k0 * ns;
+real w = c0 * k0;
+
+
  
 // 
-/*meshS ThHex;
+meshS ThHex;
 real volumetet;  // use in tetg.
 {
 	//  first  build the 6 faces of the hex.
@@ -39,7 +56,7 @@ meshS Thz1 = movemesh23(Thz,transfo=[x,y,z1],orientation=+1,region=refZ,removedu
 
 //medit("  --- ", Thx0,Thx1,Thy0,Thy1,Thz0,Thz1);
  ThHex = Thx0+Thx1+Thy0+Thy1+Thz0+Thz1;
-}*/
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////// creating an inner sphere ///////////////////////////////////////
@@ -67,7 +84,7 @@ func perio=[[4,y],[2,y],[1,x],[3,x]];  // to store the periodic condition
 // the intial mesh
 savemesh(Th,"sphere",[f1,f2,f3]);
 
-real R=0.2,hh=0.2/R;// hh  taille du maille sur la shere unite. 
+real R=radiusOfInnerSpher,hh=0.2/R;// hh  taille du maille sur la shere unite. 
 real vv= 1/square(hh);
 verbosity=2;
 Th=adaptmesh(Th,m11*vv,m21*vv,m22*vv,IsMetric=1,inquire=1,periodic=perio);
@@ -111,7 +128,7 @@ func perio=[[4,y],[2,y],[1,x],[3,x]];  // to store the periodic condition
 // the intial mesh
 savemesh(Th,"sphereOuter",[f1,f2,f3]);
 
-real R=1.5,hh=0.2/R;// hh  taille du maille sur la shere unite. 
+real R=10*radiusOfInnerSpher,hh=0.2/R;// hh  taille du maille sur la shere unite. 
 real vv= 1/square(hh);
 verbosity=2;
 Th=adaptmesh(Th,m11*vv,m21*vv,m22*vv,IsMetric=1,inquire=1,periodic=perio);
@@ -152,13 +169,13 @@ cout << " exterieur = " << reg(0,0,0.7) << endl;
 
 macro Grad(u) [dx(u),dy(u),dz(u)] // EOM
 
+
 Vh uh,vh;
-real k =4.;
-real w = 4.;
+
 real t = 0.;
 
 Vh<complex> Hz, hz;
-Vh<complex> Ey1 = exp(1i* w* t - 1i* k * x);
+Vh<complex> Ey1 = exp(1i* w* t - 1i* k0 * x);
 Vh <complex> Ez,ez,Ey,ey,Ex,ex;
 
 
