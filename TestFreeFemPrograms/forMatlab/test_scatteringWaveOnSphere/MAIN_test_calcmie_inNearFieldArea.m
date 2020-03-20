@@ -24,17 +24,18 @@ ns = [1., 1.3, 1.8];      % sphere refractive index (complex)
 
 
 dia = [100e-9];     % sphere diameter
-ns = [2 - 0.002*1i];  % sphere refractive index (complex)
+ns = [10+1i*70];    % sphere refractive index (complex)
 
 nm = 1.;            % outer medium refractive index (real)
-lambda = 600e-9;    % vacuum wavelength
+% lambda = 600e-9;    % vacuum wavelength
+lambda = 10e-6;     % vacuum wavelength (in m)
 nang = 1800;        % number of far field angles to evaluate
 
-sx = 5*dia(end);    % size of grid in x
-sy = 5*dia(end);    % size of grid in y
+sx = 1.5*dia(end);    % size of grid in x
+sy = 1.5*dia(end);    % size of grid in y
 
-Nx = 100;           % number of grid points in x
-Ny = 100;           % number of grid points in y
+Nx = 200;           % number of grid points in x
+Ny = 200;           % number of grid points in y
 
 conv = 1;           % convergence factor
 tf_flag = true;     % total field flag
@@ -83,6 +84,7 @@ for ifld=1:length(fldttl)
     title(fldttl{ifld});
     xlabel('x','FontSize',16);
     ylabel('y','FontSize',16);
+    colorbar('location','eastoutside')
 end %for ifld=1:length(fldlst)
 
 %% Plot Poynting vector
@@ -135,21 +137,21 @@ disp(getEfficiencies(C, dia(end)/2., 2));
 
 
 
-
+%%%%%%%%%%%%%%%%%%%%% fields in the cross-section xz
 %% Define test parameters
 
-% stratified sphere
-dia = [100e-9];     % sphere diameter
+% % stratified sphere
+% dia = [100e-9];     % sphere diameter
+% 
+% nm = 1.;            % outer medium refractive index (real)
+% lambda = 600e-9;    % vacuum wavelength
+% nang = 1800;        % number of far field angles to evaluate
 
-nm = 1.;            % outer medium refractive index (real)
-lambda = 600e-9;    % vacuum wavelength
-nang = 1800;        % number of far field angles to evaluate
+sx = 1.5*dia(end);    % size of grid in x
+sz = 1.5*dia(end);    % size of grid in y
 
-sx = 5*dia(end);    % size of grid in x
-sz = 5*dia(end);    % size of grid in y
-
-Nx = 100;           % number of grid points in x
-Nz = 100;           % number of grid points in z
+Nx = 200;           % number of grid points in x
+Nz = 200;           % number of grid points in z
 
 conv = 1;           % convergence factor
 tf_flag = true;     % total field flag
@@ -198,10 +200,87 @@ for ifld=1:length(fldttl)
     title(fldttl{ifld});
     xlabel('z','FontSize',16);
     ylabel('x','FontSize',16);
+    colorbar('location','eastoutside')
 end %for ifld=1:length(fldlst)
 
-%% video for the Ex component
-w0 = c0 / lambda;
-Ex = fields{1};
-t = [0:0.01:5] * 2 * pi / w0;
-videoReal(t, w0, zf, 'z', xf, 'x', Ex, 'E_x')
+
+
+
+
+
+
+%%%%%% field in the cross-section yz
+%% Define test parameters
+
+% % stratified sphere
+% dia = [100e-9];     % sphere diameter
+% 
+% nm = 1.;            % outer medium refractive index (real)
+% lambda = 600e-9;    % vacuum wavelength
+% nang = 1800;        % number of far field angles to evaluate
+
+sy = 1.5*dia(end);    % size of grid in y
+sz = 1.5*dia(end);    % size of grid in y
+
+Ny = 200;           % number of grid points in y
+Nz = 200;           % number of grid points in z
+
+conv = 1;           % convergence factor
+tf_flag = true;     % total field flag
+cc_flag = true;     % cartesian coordinates flag
+
+rad = dia/2.;       % sphere radius
+
+%% Set up near field coordinates in the cross-section z=0
+deltay = sy/Ny;
+deltaz = sz/Nz;
+ny = ((0:(Ny - 1)) - Ny/2.)*deltay;
+nz = ((0:(Nz - 1)) - Nz/2.)*deltaz;
+[zf, yf] = ndgrid(nz, ny);
+xf = zeros(size(zf));
+
+%% Calculate near field solution
+tic
+[E, H, P, S, C, ang] = calcmie_nf(dia/2., ns, nm, ...
+    lambda, xf, yf, zf, ...
+    'ConvergenceFactor', conv, ...
+    'TotalField', tf_flag, ...
+    'Cartesian', cc_flag, ...
+    'nang', nang);
+toc
+
+%% Plot near field solution
+fields = {E(:,:,1), E(:,:,2), E(:,:,3), H(:,:,1), H(:,:,2), ...
+    H(:,:,3)};
+
+if cc_flag
+    fldttl = {'E_x', 'E_y', 'E_z', 'H_x', 'H_y', 'H_z'};
+else %if cc_flag
+    fldttl = {'E_{rho}', 'E_{phi}', 'E_{theta}', 'H_{rho}', 'H_{phi}', ...
+        'H_{theta}'}; %#ok<*UNRCH>
+end %if cc_flag
+
+figure
+for ifld=1:length(fldttl)
+    subplot(2, 3, ifld);
+    if ~isempty(fields{ifld})
+        imagesc(nz, ny, flipud(rot90(abs(fields{ifld}).^2)));
+        rectangle(...
+            'Position', [-rad(end), -rad(end), dia(end), dia(end)], ...
+            'Curvature', [1,1])
+    end %if ~isempty(fields{ifld})
+    title(fldttl{ifld});
+    xlabel('z','FontSize',16);
+    ylabel('y','FontSize',16);
+    colorbar('location','eastoutside')
+end %for ifld=1:length(fldlst)
+
+
+
+% %% video for the Ex component
+% w0 = c0 / lambda;
+% t =- [0:0.01:5] * 2 * pi / w0;
+% % Ex = fields{1};
+% % videoReal(t, w0, zf, 'z', xf, 'x', Ex, 'E_x')
+% Ey = fields{2};
+% videoReal(t, w0, zf, 'z', xf, 'x', Ey, 'E_y')

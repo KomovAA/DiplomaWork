@@ -6,7 +6,7 @@ load "medit"
 include "ffmatlib.idp"
  
 // 
-meshS ThHex;
+/*meshS ThHex;
 real volumetet;  // use in tetg.
 {
 	//  first  build the 6 faces of the hex.
@@ -39,7 +39,7 @@ meshS Thz1 = movemesh23(Thz,transfo=[x,y,z1],orientation=+1,region=refZ,removedu
 
 //medit("  --- ", Thx0,Thx1,Thy0,Thy1,Thz0,Thz1);
  ThHex = Thx0+Thx1+Thy0+Thy1+Thz0+Thz1;
-}
+}*/
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////// creating an inner sphere ///////////////////////////////////////
