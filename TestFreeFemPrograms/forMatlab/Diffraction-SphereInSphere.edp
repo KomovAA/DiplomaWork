@@ -160,7 +160,7 @@ meshS ThS = ThOuterSphere + ThInnerSphere;
 medit("Bounday mesh",ThS,wait=1);
 
 // build a mesh of a axis parallel box with TetGen
-real hs = 0.1 * lambda;
+real hs = 0.8 * lambda;
 real voltet=(hs^3)/6.;
 
 real[int] domaine = [0,0,0,1,volumetet,0,0,0.7,2,volumetet];
@@ -240,19 +240,19 @@ problem GelmhotzEquationForH3D([Ez,Ey,Ex],[ez,ey,ex])=
 	 + int2d(Th,11)
 	(
 	   N.x*dx(Ey1)*ey + N.y*dy(Ey1)*ey + N.z*dz(Ey1)*ey
-	)
-	+ int2d(Th,12)
-	(
-	   -1i*k* Ez*ez
-	)
-	+ int2d(Th,12)
-	(
-	   -1i*k* Ey*ey
-	)
-	+ int2d(Th,12)
-	(
-	   -1i*k* Ex*ex
 	)*/
+	+ int2d(Th,12)
+	(
+	   -1i*k0* Ez*ez
+	)
+	+ int2d(Th,12)
+	(
+	   -1i*k0* Ey*ey
+	)
+	+ int2d(Th,12)
+	(
+	   -1i*k0* Ex*ex
+	)
 //	+ on(11, Ex= 0)
 	
   //+ int2d(Th,12)(-1i*k* Hz* hz)
