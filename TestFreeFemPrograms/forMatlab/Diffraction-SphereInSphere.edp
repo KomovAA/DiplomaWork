@@ -13,7 +13,7 @@ real eps0 = 1./c0^2/mue0;   // Permittivity of free space
 real Z0 = sqrt(mue0/eps0);  // Impedance of free space
 
 real    lambda0 = 10e-6;        // vacuum wavelength (in m)
-complex ns    = 10-1i*70;   // sphere refractive index (complex)
+complex ns    = 10-0*1i*70;   // sphere refractive index (complex)
 real radiusOfInnerSpher = 1.5 * lambda0;
 
 real lambda = 1;        // vacuum wavelength (in 10*1e-6 m)
@@ -172,7 +172,6 @@ cout << " exterieur = " << reg(0,0,0.7) << endl;
 
 macro Grad(u) [dx(u),dy(u),dz(u)] // EOM
 
-
 Vh uh,vh;
 
 real t = 0.;
@@ -180,59 +179,60 @@ real t = 0.;
 Vh<complex> Hz, hz;
 Vh<complex> Ey1 = exp(1i* w* t - 1i* k0 * x);
 Vh <complex> Ez,ez,Ey,ey,Ex,ex;
+Vh <complex> N0= 1. + (ns-1.)*(sqrt(x^2.+y^2. + z^2.) < radiusOfInnerSpher);
 
-
+/*
 problem GelmhotzEquationForH3D([Ez,Ey,Ex],[ez,ey,ex])=
   - int3d(Th,2)( Grad(Ez)'* Grad(ez))
   - int3d(Th,2)( Grad(Ey)'* Grad(ey))
   - int3d(Th,2)( Grad(Ex)'* Grad(ex))
-  + int3d(Th) (k0^2 * Ex* ex)
-  + int3d(Th) (k0^2 * Ey* ey)
-  + int3d(Th) (k0^2 * Ez* ez)
-    + int2d(Th,11)
+  + int3d(Th) (k0^2*N0^2 * Ex* ex)
+  + int3d(Th) (k0^2*N0^2 * Ey* ey)
+  + int3d(Th) (k0^2*N0^2 * Ez* ez)*/
+  /* + int2d(Th,11)
     (
        N.x*dx(Ez)*ez + N.y*dy(Ez)*ez
 	)
 	 + int2d(Th,11)
 	(
 	    - N.z*dx(Ex)*ez - N.z*dy(Ey)*ez
-	)
-	 + int2d(Th,11)
+	)*/
+/*	 + int2d(Th,11)
 	(
 	    - N.z*dy(Ey1)*ez
-	)
-    + int2d(Th,11)
+	)*/
+    /*+ int2d(Th,11)
     (
        N.z*dz(Ex)*ex + N.y*dy(Ex)*ex
 	)
 	 + int2d(Th,11)
 	(
 	    -N.x*dz(Ez)*ex - N.x*dy(Ey)*ex
-	)
-	+ int2d(Th,11)
+	)*/
+/*	+ int2d(Th,11)
 	(
 	    - N.x*dy(Ey1)*ex
-	)
-		+ int2d(Th,11)
+	)*/
+	/*	+ int2d(Th,11)
     (
        N.x*dx(Ey)*ey + N.y*dy(Ey)*ey + N.z*dz(Ey)*ey
-	)
-	 + int2d(Th,11)
+	)*/
+/*	 + int2d(Th,11)
 	(
 	   N.x*dx(Ey1)*ey + N.y*dy(Ey1)*ey + N.z*dz(Ey1)*ey
 	)
 	+ int2d(Th,12)
 	(
-	   -1i*k0* Ez*ez
+	   -1i*k* Ez*ez
 	)
 	+ int2d(Th,12)
 	(
-	   -1i*k0* Ey*ey
+	   -1i*k* Ey*ey
 	)
 	+ int2d(Th,12)
 	(
-	   -1i*k0* Ex*ex
-	)
+	   -1i*k* Ex*ex
+	)*/
 //	+ on(11, Ex= 0)
 	
   //+ int2d(Th,12)(-1i*k* Hz* hz)
@@ -240,20 +240,20 @@ problem GelmhotzEquationForH3D([Ez,Ey,Ex],[ez,ey,ex])=
  // + int2d(Th,3,-3)(cf*vh*uh)
   ; 
   
-  GelmhotzEquationForH3D;
+ // GelmhotzEquationForH3D;
   
 Vh realHz, realEx, realEy,realEy1;
 Vh<complex> HzInTime = 0.;
 Vh<complex> Ey1InTime = 0.;
-Vh E0=1.,yy;
+Vh<complex> E0=1.;
 //HzInTime = Hz* exp(1i * w * t) + exp(1i* w* t - 1i* k * x);
-Ey = Ey + (E0 * exp (1i*(- k0*x)));
+Ey = 0*Ey + (E0 * exp (- 1i * k0 * x ));
 Ey1InTime = Ey * exp (1i*(w*t));
 //realHz = real(HzInTime);
 realEy1 = real(Ey1InTime);
 
-
-
+cout << "k0 = " << k0 << endl;
+cout << "k = " << k << endl;
 
 ///// save for the matlab
 savemesh(Th,"diffractionSInS3d.mesh");
@@ -287,7 +287,7 @@ real[int] CameraViewUpValue = [0.7198,0.502367,-0.479078];
 real[int] CutPlaneOriginValue = [-0.5,-0.55,0.0335184];
 real[int] CutPlaneNormalValue = [0,0,1];
 
-	Ey1InTime = Ey * exp (1i*(w*t)) + 0*(E0 * exp (1i*(w*t - k0*x)));
+	Ey1InTime = Ey * exp (1i*(w*t)) + (E0 * exp (1i*(w*t - k0*x)));
 	realEy1 = real(Ey1InTime);
 plot(realEy1,wait=1,value=1,
 	CameraPosition=CameraPositionValue,
