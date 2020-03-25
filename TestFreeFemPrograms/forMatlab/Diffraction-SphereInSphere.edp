@@ -13,14 +13,14 @@ real eps0 = 1./c0^2/mue0;   // Permittivity of free space
 real Z0 = sqrt(mue0/eps0);  // Impedance of free space
 
 real    lambda0 = 10e-6;        // vacuum wavelength (in m)
-complex ns    = 10-0*1i*70;   // sphere refractive index (complex)
+complex ns    = 10.-0*1i*70.;   // sphere refractive index (complex)
 real radiusOfInnerSpher = 1.5 * lambda0;
 
-real lambda = 1;        // vacuum wavelength (in 10*1e-6 m)
+real lambda = 1.;        // vacuum wavelength (in 10*1e-6 m)
      radiusOfInnerSpher = 1.5 * lambda;
 
 real k0 = 2.* pi / lambda;
-complex k = k0 * ns;
+//complex k = k0 * ns;
 real w = c0 * 2.* pi / lambda0;
 
 
@@ -61,6 +61,10 @@ meshS Thz1 = movemesh23(Thz,transfo=[x,y,z1],orientation=+1,region=refZ,removedu
  ThHex = Thx0+Thx1+Thy0+Thy1+Thz0+Thz1;
 }
 
+
+//real step = 0.2/radiusOfInnerSpher;
+real step = lambda / 10;
+
 //////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////// creating an inner sphere ///////////////////////////////////////
 meshS ThInnerSphere; // 
@@ -87,7 +91,7 @@ func perio=[[4,y],[2,y],[1,x],[3,x]];  // to store the periodic condition
 // the intial mesh
 savemesh(Th,"sphere",[f1,f2,f3]);
 
-real R=radiusOfInnerSpher,hh=0.2/R;// hh = 0.1 -> max , hh=0.5 -> min 
+real R=radiusOfInnerSpher,hh=step/R;// hh = 0.1 -> max , hh=0.5 -> min 
 real vv= 1/square(hh);
 verbosity=2;
 Th=adaptmesh(Th,m11*vv,m21*vv,m22*vv,IsMetric=1,inquire=1,periodic=perio);
@@ -131,7 +135,7 @@ func perio=[[4,y],[2,y],[1,x],[3,x]];  // to store the periodic condition
 // the intial mesh
 savemesh(Th,"sphereOuter",[f1,f2,f3]);
 
-real R=10*radiusOfInnerSpher,hh=1/R;// hh  taille du maille sur la shere unite. 
+real R=2*radiusOfInnerSpher,hh=step*2/R;// hh  taille du maille sur la shere unite. 
 real vv= 1/square(hh);
 verbosity=2;
 Th=adaptmesh(Th,m11*vv,m21*vv,m22*vv,IsMetric=1,inquire=1,periodic=perio);
@@ -156,11 +160,13 @@ meshS ThS = ThOuterSphere + ThInnerSphere;
 medit("Bounday mesh",ThS,wait=1);
 
 // build a mesh of a axis parallel box with TetGen
+real hs = 0.1 * lambda;
+real voltet=(hs^3)/6.;
 
 real[int] domaine = [0,0,0,1,volumetet,0,0,0.7,2,volumetet];
 mesh3 Th = tetg(ThS,switch="pqaAAYYQ",nbofregions=2,regionlist=domaine);    
 // Tetrahelize the interior of the cube with tetgen
-//medit("tetg",Th,wait=0);
+// medit("tetg",Th,wait=1);
 savemesh(Th,"Th-hex-sph.mesh");
 
 fespace Ph(Th,P03d);
@@ -177,47 +183,61 @@ Vh uh,vh;
 real t = 0.;
 
 Vh<complex> Hz, hz;
-Vh<complex> Ey1 = exp(1i* w* t - 1i* k0 * x);
+Vh<complex> Ey1 = exp(- 1i* k0 * x);
 Vh <complex> Ez,ez,Ey,ey,Ex,ex;
-Vh <complex> N0= 1. + (ns-1.)*(sqrt(x^2.+y^2. + z^2.) < radiusOfInnerSpher);
+Vh <complex> N0= 1. + (2.-1.)*(sqrt(x^2.+y^2. + z^2.) < radiusOfInnerSpher);
 
-/*
+Vh <complex> k = k0 * N0;
+complex k2 = k0 * 2;
+
+
 problem GelmhotzEquationForH3D([Ez,Ey,Ex],[ez,ey,ex])=
   - int3d(Th,2)( Grad(Ez)'* Grad(ez))
   - int3d(Th,2)( Grad(Ey)'* Grad(ey))
   - int3d(Th,2)( Grad(Ex)'* Grad(ex))
-  + int3d(Th) (k0^2*N0^2 * Ex* ex)
-  + int3d(Th) (k0^2*N0^2 * Ey* ey)
-  + int3d(Th) (k0^2*N0^2 * Ez* ez)*/
-  /* + int2d(Th,11)
+  + int3d(Th,2) (k0^2 * Ex* ex)
+  + int3d(Th,2) (k0^2 * Ey* ey)
+  + int3d(Th,2) (k0^2 * Ez* ez)
+  - int3d(Th,1)( Grad(Ez)'* Grad(ez))
+  - int3d(Th,1)( Grad(Ey)'* Grad(ey))
+  - int3d(Th,1)( Grad(Ex)'* Grad(ex))
+  + int3d(Th,1) (k2^2 * Ex* ex)
+  + int3d(Th,1) (k2^2 * Ey* ey)
+  + int3d(Th,1) (k2^2 * Ez* ez)
+  + int2d(Th,11)
+  (
+       N.x*dx(Ey)*ey + N.y*dy(Ey)*ey + N.z*dz(Ey)*ey
+   )
+ // + int3d(Th,1) (Ey1 * ey)
+ /*  + int2d(Th,0,11)
     (
        N.x*dx(Ez)*ez + N.y*dy(Ez)*ez
 	)
 	 + int2d(Th,11)
 	(
 	    - N.z*dx(Ex)*ez - N.z*dy(Ey)*ez
-	)*/
-/*	 + int2d(Th,11)
+	)
+	 + int2d(Th,11)
 	(
 	    - N.z*dy(Ey1)*ez
-	)*/
-    /*+ int2d(Th,11)
+	)
+    + int2d(Th,11)
     (
        N.z*dz(Ex)*ex + N.y*dy(Ex)*ex
 	)
 	 + int2d(Th,11)
 	(
 	    -N.x*dz(Ez)*ex - N.x*dy(Ey)*ex
-	)*/
-/*	+ int2d(Th,11)
+	)
+	+ int2d(Th,11)
 	(
 	    - N.x*dy(Ey1)*ex
-	)*/
-	/*	+ int2d(Th,11)
+	)
+		+ int2d(Th,11)
     (
        N.x*dx(Ey)*ey + N.y*dy(Ey)*ey + N.z*dz(Ey)*ey
-	)*/
-/*	 + int2d(Th,11)
+	)
+	 + int2d(Th,0,11)
 	(
 	   N.x*dx(Ey1)*ey + N.y*dy(Ey1)*ey + N.z*dz(Ey1)*ey
 	)
@@ -240,20 +260,20 @@ problem GelmhotzEquationForH3D([Ez,Ey,Ex],[ez,ey,ex])=
  // + int2d(Th,3,-3)(cf*vh*uh)
   ; 
   
- // GelmhotzEquationForH3D;
+  GelmhotzEquationForH3D;
   
 Vh realHz, realEx, realEy,realEy1;
 Vh<complex> HzInTime = 0.;
 Vh<complex> Ey1InTime = 0.;
 Vh<complex> E0=1.;
 //HzInTime = Hz* exp(1i * w * t) + exp(1i* w* t - 1i* k * x);
-Ey = 0*Ey + (E0 * exp (- 1i * k0 * x ));
+Ey = Ey + 0*(E0 * exp (- 1i * k * x ));
 Ey1InTime = Ey * exp (1i*(w*t));
 //realHz = real(HzInTime);
 realEy1 = real(Ey1InTime);
 
 cout << "k0 = " << k0 << endl;
-cout << "k = " << k << endl;
+//cout << "k = " << k << endl;
 
 ///// save for the matlab
 savemesh(Th,"diffractionSInS3d.mesh");
