@@ -205,9 +205,9 @@ problem GelmhotzEquationForH3D([Ez,Ey,Ex],[ez,ey,ex])=
   + int3d(Th,1) (k2^2 * Ey* ey)
   + int3d(Th,1) (k2^2 * Ez* ez)
   + int2d(Th,11)
-  (
-       N.x*dx(Ey)*ey + N.y*dy(Ey)*ey + N.z*dz(Ey)*ey
-   )
+	(
+	   N.x*dx(Ey1)*ey + N.y*dy(Ey1)*ey + N.z*dz(Ey1)*ey
+	)
  // + int3d(Th,1) (Ey1 * ey)
  /*  + int2d(Th,0,11)
     (
@@ -237,7 +237,7 @@ problem GelmhotzEquationForH3D([Ez,Ey,Ex],[ez,ey,ex])=
     (
        N.x*dx(Ey)*ey + N.y*dy(Ey)*ey + N.z*dz(Ey)*ey
 	)
-	 + int2d(Th,0,11)
+	 + int2d(Th,11)
 	(
 	   N.x*dx(Ey1)*ey + N.y*dy(Ey1)*ey + N.z*dz(Ey1)*ey
 	)
