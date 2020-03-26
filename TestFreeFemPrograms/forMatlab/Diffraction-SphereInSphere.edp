@@ -2,6 +2,7 @@ verbosity=1;
 load "msh3"
 load "tetgen"
 load "medit"
+include "MeshSurface.idp"
 
 include "ffmatlib.idp"
 
@@ -16,8 +17,8 @@ real    lambda0 = 10e-6;        // vacuum wavelength (in m)
 complex ns    = 10.-0*1i*70.;   // sphere refractive index (complex)
 real radiusOfInnerSpher = 1.5 * lambda0;
 
-real lambda = 3.;        // vacuum wavelength (in 10*1e-6 m)
-     radiusOfInnerSpher = 0.5 * lambda;
+real lambda = 1.;        // vacuum wavelength (in 10*1e-6 m)
+     radiusOfInnerSpher = 1.* lambda;
 
 real k0 = 2.* pi / lambda;
 //complex k = k0 * ns;
@@ -28,47 +29,17 @@ real w = c0 * 2.* pi / lambda0;
 // 
 meshS ThHex;
 real volumetet;  // use in tetg.
-{
-	//  first  build the 6 faces of the hex.
-real x0=-1,x1=1;
-real y0=-1.1,y1=1.1;
-real z0=-1.2,z1=1.2;
-
-int nx=19,ny=20,nz=21;
-//  a  volume  of  on tet. 
-volumetet= (x1-x0)*(y1-y0)*(z1-z0)/ (nx*ny*ny) /6.;
-
-mesh Thx = square(ny,nz,[y0+(y1-y0)*x,z0+(z1-z0)*y]);
-mesh Thy = square(nx,nz,[x0+(x1-x0)*x,z0+(z1-z0)*y]);
-mesh Thz = square(nx,ny,[x0+(x1-x0)*x,y0+(y1-y0)*y]);
-
-int[int] refz=[0,5];  //  bas
-int[int] refZ=[0,6];   //  haut
-int[int] refy=[0,3];  //  devant
-int[int] refY=[0,4];   // derriere
-int[int] refx=[0,1];  // gauche
-int[int] refX=[0,2];   // droite 
-
-
-meshS Thx0 = movemesh23(Thx,transfo=[x0,x,y],orientation=-1,region=refx,removeduplicate=false); 
-meshS Thx1 = movemesh23(Thx,transfo=[x1,x,y],orientation=1,region=refX,removeduplicate=false);
-meshS Thy0 = movemesh23(Thy,transfo=[x,y0,y],orientation=+1,region=refy,removeduplicate=false);
-meshS Thy1 = movemesh23(Thy,transfo=[x,y1,y],orientation=-1,region=refY,removeduplicate=false);
-meshS Thz0 = movemesh23(Thz,transfo=[x,y,z0],orientation=-1,region=refz,removeduplicate=false);
-meshS Thz1 = movemesh23(Thz,transfo=[x,y,z1],orientation=+1,region=refZ,removeduplicate=false);
-
-//medit("  --- ", Thx0,Thx1,Thy0,Thy1,Thz0,Thz1);
- ThHex = Thx0+Thx1+Thy0+Thy1+Thz0+Thz1;
-}
 
 
 //real step = 0.2/radiusOfInnerSpher;
 real step = lambda / 10;
 
+volumetet = (step^3)/6.; 
+
 //////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////// creating an inner sphere ///////////////////////////////////////
 meshS ThInnerSphere; // 
-{
+/*{
 mesh  Th=square(10,20,[x*pi-pi/2,2*y*pi]);  //  $]\frac{-pi}{2},frac{-pi}{2}[\times]0,2\pi[ $
 //  a paratrization of a sphere 
 func f1 =cos(x)*cos(y);
@@ -91,7 +62,7 @@ func perio=[[4,y],[2,y],[1,x],[3,x]];  // to store the periodic condition
 // the intial mesh
 savemesh(Th,"sphere",[f1,f2,f3]);
 
-real R=0.4*radiusOfInnerSpher,hh=step/R;// hh = 0.1 -> max , hh=0.5 -> min 
+real R=radiusOfInnerSpher,hh=step;// hh = 0.1 -> max , hh=0.5 -> min 
 real vv= 1/square(hh);
 verbosity=2;
 Th=adaptmesh(Th,m11*vv,m21*vv,m22*vv,IsMetric=1,inquire=1,periodic=perio);
@@ -103,8 +74,8 @@ Th=adaptmesh(Th,m11*vv,m21*vv,m22*vv,IsMetric=1,periodic=perio);
 Th=adaptmesh(Th,m11*vv,m21*vv,m22*vv,IsMetric=1,periodic=perio);
 
 int[int] refIn = [0,11];
-ThInnerSphere = movemesh23(Th,transfo=[f1*R,f2*R,f3*R],orientation=-1, region=refIn,removeduplicate=false);
-}
+ThInnerSphere = movemesh23(Th,transfo=[f1*R,f2*R,f3*R],orientation=1, region=refIn,removeduplicate=false);
+}*/
 
 
 
@@ -112,7 +83,7 @@ ThInnerSphere = movemesh23(Th,transfo=[f1*R,f2*R,f3*R],orientation=-1, region=re
 //////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////// creating an outer sphere ///////////////////////////////////////
 meshS ThOuterSphere; // 
-{
+/*{
 mesh Th=square(10,20,[x*pi-pi/2,2*y*pi]);  //  $]\frac{-pi}{2},frac{-pi}{2}[\times]0,2\pi[ $
 //  a paratrization of a sphere 
 func f1 =cos(x)*cos(y);
@@ -135,7 +106,7 @@ func perio=[[4,y],[2,y],[1,x],[3,x]];  // to store the periodic condition
 // the intial mesh
 savemesh(Th,"sphereOuter",[f1,f2,f3]);
 
-real R=radiusOfInnerSpher,hh=step*2/R;// hh  taille du maille sur la shere unite. 
+real R=10*radiusOfInnerSpher,hh=step;// hh  taille du maille sur la shere unite. 
 real vv= 1/square(hh);
 verbosity=2;
 Th=adaptmesh(Th,m11*vv,m21*vv,m22*vv,IsMetric=1,inquire=1,periodic=perio);
@@ -147,24 +118,24 @@ Th=adaptmesh(Th,m11*vv,m21*vv,m22*vv,IsMetric=1,periodic=perio);
 Th=adaptmesh(Th,m11*vv,m21*vv,m22*vv,IsMetric=1,periodic=perio);
 
 int[int] refOut = [0,12];
-ThOuterSphere = movemesh23(Th,transfo=[f1*R,f2*R,f3*R],orientation=-1, region=refOut,removeduplicate=false);
-}
+ThOuterSphere = movemesh23(Th,transfo=[f1*R,f2*R,f3*R],orientation=1, region=refOut,removeduplicate=false);
+}*/
 
-
-
-
+step = lambda / 2;
+//volumetet = (step^3)/6.;
+real hs = step;
+ThInnerSphere = Sphere(radiusOfInnerSpher,    step,11,1);
+ThOuterSphere = Sphere(4.*radiusOfInnerSpher, step,12,1);
 
 /////////////////////////////////////////////////////////////////////////////
 //meshS ThS = ThHex + ThInnerSphere; // "gluing" surface meshs to tolat boundary meshes
-meshS ThS = ThOuterSphere + ThInnerSphere;
+meshS ThS =  ThOuterSphere + ThInnerSphere;
 medit("Bounday mesh",ThS,wait=1);
 
-// build a mesh of a axis parallel box with TetGen
-real hs = 0.8 * lambda;
-real voltet=(hs^3)/6.;
 
+real voltet=(hs^3)/6.;
 real[int] domaine = [0,0,0,1,volumetet,0,0,0.7,2,volumetet];
-mesh3 Th = tetg(ThS,switch="pqaAAYYQ",nbofregions=2,regionlist=domaine);    
+mesh3 Th = tetg(ThS,switch="pqaAAYYQ",nbofregions=2,regionlist=domaine);
 // Tetrahelize the interior of the cube with tetgen
 // medit("tetg",Th,wait=1);
 savemesh(Th,"Th-hex-sph.mesh");
@@ -175,6 +146,7 @@ Ph reg=region;
 
 cout << "  centre = " << reg(0,0,0) << endl;
 cout << " exterieur = " << reg(0,0,0.7) << endl;
+cout << "  voltet = " << voltet << endl;
 
 macro Grad(u) [dx(u),dy(u),dz(u)] // EOM
 
@@ -185,12 +157,13 @@ real t = 0.;
 Vh<complex> Hz, hz;
 Vh<complex> Ey1 = exp(- 1i* k0 * x);
 Vh <complex> Ez,ez,Ey,ey,Ex,ex;
-Vh <complex> N0= 1. + (2.-1.)*(sqrt(x^2.+y^2. + z^2.) < radiusOfInnerSpher);
+real n2 = 2.;
+Vh <complex> N0= 1. + (n2 - 1.)*(sqrt(x^2.+y^2. + z^2.) < radiusOfInnerSpher);
 
-Vh <complex> k = k0 * N0;
-complex k2 = k0 * 1; // quantity sphere 1->1,2->2
+//Vh <complex> k = k0 * N0;
+complex k2 = k0 * n2; // quantity sphere 1->1,2->2
 
-
+/*
 problem GelmhotzEquationForH3D([Ez,Ey,Ex],[ez,ey,ex])=
   - int3d(Th,2)( Grad(Ez)'* Grad(ez))
   - int3d(Th,2)( Grad(Ey)'* Grad(ey))
@@ -208,8 +181,6 @@ problem GelmhotzEquationForH3D([Ez,Ey,Ex],[ez,ey,ex])=
 	(
 	   N.x*dx(Ey1)*ey + N.y*dy(Ey1)*ey + N.z*dz(Ey1)*ey
 	)
-	
-
  // + int3d(Th,1) (Ey1 * ey)
  /*  + int2d(Th,0,11)
     (
@@ -242,7 +213,7 @@ problem GelmhotzEquationForH3D([Ez,Ey,Ex],[ez,ey,ex])=
 	 + int2d(Th,11)
 	(
 	   N.x*dx(Ey1)*ey + N.y*dy(Ey1)*ey + N.z*dz(Ey1)*ey
-	)*/
+	)
 	+ int2d(Th,12)
 	(
 	   -1i*k0* Ez*ez
@@ -261,6 +232,22 @@ problem GelmhotzEquationForH3D([Ez,Ey,Ex],[ez,ey,ex])=
  // + int2d(Th,2,-2)(vh*gn)
  // + int2d(Th,3,-3)(cf*vh*uh)
   ; 
+  */
+  
+  problem GelmhotzEquationForH3D([Ey],[ey])=
+  - int3d(Th)( Grad(Ey)'* Grad(ey))
+  + int3d(Th) (k0^2 * N0^2 * Ey* ey)
+//  - int3d(Th,2)( Grad(Ey)'* Grad(ey))
+//  + int3d(Th,1) (k2^2 * Ey* ey)
+  + int2d(Th,11)
+	(
+	   N.x*dx(Ey1)*ey
+	)
+  + int2d(Th,12)
+	(
+	   -1i*k0* Ey*ey
+	)
+  ; 
   
   GelmhotzEquationForH3D;
   
@@ -269,7 +256,7 @@ Vh<complex> HzInTime = 0.;
 Vh<complex> Ey1InTime = 0.;
 Vh<complex> E0=1.;
 //HzInTime = Hz* exp(1i * w * t) + exp(1i* w* t - 1i* k * x);
-Ey = Ey + 0*(E0 * exp (- 1i * k * x ));
+Ey = Ey + 0*(E0 * exp (- 1i * k0 * x ));
 Ey1InTime = Ey * exp (1i*(w*t));
 //realHz = real(HzInTime);
 realEy1 = real(Ey1InTime);
@@ -309,7 +296,7 @@ real[int] CameraViewUpValue = [0.7198,0.502367,-0.479078];
 real[int] CutPlaneOriginValue = [-0.5,-0.55,0.0335184];
 real[int] CutPlaneNormalValue = [0,0,1];
 
-	Ey1InTime = Ey * exp (1i*(w*t)) + (E0 * exp (1i*(w*t - k0*x)));
+	Ey1InTime = Ey + (E0 * exp (1i*(- k0*x)));
 	realEy1 = real(Ey1InTime);
 plot(realEy1,wait=1,value=1,
 	CameraPosition=CameraPositionValue,
@@ -326,7 +313,7 @@ for (int i=1; i < 100; i++)
     t = dt * i;
     cout<< "Time is" << t << endl;
 	
-	Ey1InTime = Ey * exp (1i*(w*t)) + 0*(E0 * exp (1i*(w*t - k0*x)));
+	Ey1InTime = Ey * exp (1i*(w*t)) + (E0 * exp (1i*(w*t - k0*x)));
 	realEy1 = real(Ey1InTime);
 	
 	plot(realEy1,wait=0,value=1,

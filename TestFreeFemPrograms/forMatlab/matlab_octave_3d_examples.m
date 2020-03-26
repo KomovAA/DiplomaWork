@@ -30,7 +30,7 @@ Ey=ffreaddata('diffractionSInS3d_Ey.txt');
 % S3=[0.75 0.375 -0.5; ...
 %     0.375 0.75 -0.5];
 
-boundOut = 3; 
+boundOut = 1; 
 
 S1=[-boundOut 0 -boundOut;...
     -boundOut -boundOut 0];
@@ -61,3 +61,36 @@ ffpdeplot3D(p,b,t,'VhSeq',vh,'XYZData',real(Ey),'Slice',S1,S2,S3,'SGridParam',[8
 
         
         
+
+
+
+
+
+
+
+
+
+[p,b,t,nv,nbe,nt,labels]=ffreadmesh('diffractionSInS3d_Maxwell.mesh');
+vh=ffreaddata('diffractionSInS3d_vh_Maxwell.txt');
+Ey=ffreaddata('diffractionSInS3d_Ey_Maxwell.txt');
+
+% S1=[-0 0.375 -0.5; ...
+%     0.375 0 -0.5];
+% S2=[0.0 0.375 0.5; ...
+%     0.375 0 0.5];
+% S3=[0.75 0.375 -0.5; ...
+%     0.375 0.75 -0.5];
+
+% boundOut = 4; 
+
+S1=[-boundOut 0 -boundOut;...
+    -boundOut -boundOut 0];
+S2=[-boundOut 0 boundOut;...
+    -boundOut boundOut 0];
+S3=[ boundOut 0 -boundOut; ...
+     boundOut -boundOut 0];
+
+figure(34);
+ffpdeplot3D(p,b,t,'VhSeq',vh,'XYZData',real(Ey),'Slice',S1,S2,S3,'SGridParam',[80,80],'BDLabels',[30,31], ...
+            'XYZStyle','monochrome','ColorMap',jet(200),'ColorBar','on','BoundingBox','on');
+
