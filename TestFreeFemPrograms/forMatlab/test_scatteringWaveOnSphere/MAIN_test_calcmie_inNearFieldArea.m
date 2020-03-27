@@ -26,7 +26,7 @@ ns = [1., 1.3, 1.8];      % sphere refractive index (complex)
 dia = [100e-9];     % sphere diameter
 ns = [10+1i*70];    % sphere refractive index (complex)
 
-dia = [2e-6];     % sphere diameter
+dia = [0.2e-6];     % sphere diameter
 ns = [2];    % sphere refractive index (complex)
 
 nm = 1.;            % outer medium refractive index (real)

@@ -18,9 +18,10 @@ complex ns    = 10.-0*1i*70.;   // sphere refractive index (complex)
 ns = 2.;
 
 real lambda = 1.;        // vacuum wavelength (in 10*1e-6 m)
-real radiusOfInnerSpher = 1.* lambda;
+real radiusOfInnerSpher = 0.1 * lambda;
 
 real k0 = 2.* pi / lambda;
+complex k2 = k0 * ns;
 real w = c0 * 2.* pi / lambda0;
 real alpha=1; 	//penalty term
 
@@ -30,22 +31,21 @@ meshS ThHex;
 real volumetet;  // use in tetg.
 
 //real step = 0.2/radiusOfInnerSpher;
-real step = lambda / 4;
+real step = lambda / 8;
 
 volumetet = (step^3)/6.;  
 //step = lambda / 2;
-real hs = step;
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////// creating an inner sphere ///////////////////////////////////////
 meshS ThInnerSphere; //
-ThInnerSphere = Sphere(radiusOfInnerSpher,    step,11,1);
-
+ThInnerSphere = Sphere(radiusOfInnerSpher,    step/32,11,1);
+medit("Bounday mesh",ThInnerSphere,wait=1);
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////// creating an outer sphere ///////////////////////////////////////
 meshS ThOuterSphere; // 
-ThOuterSphere = Sphere(4.*radiusOfInnerSpher, step,12,1);
+ThOuterSphere = Sphere(4.*lambda, step,12,1);
 
 /////////////////////////////////////////////////////////////////////////////
 meshS ThS =  ThOuterSphere + ThInnerSphere;
@@ -60,7 +60,12 @@ savemesh(Th,"Th-hex-sph.mesh");
 
 fespace Ph(Th,P03d);
 fespace Vh(Th,P1);
-Ph reg=region;
+Ph reg = region;           // function that returns region number of a point XY
+Ph inReg  = sqrt(x^2.+y^2. + z^2.) < radiusOfInnerSpher;  //subdomains for inside the sratterer
+Ph outReg = sqrt(x^2.+y^2. + z^2.) > radiusOfInnerSpher;  //subdomains for outside the scatterer
+Vh dd = inReg;
+
+//plot(dd,wait=1,value=1);
 
 cout << "  centre = " << reg(0,0,0) << endl;
 cout << " exterieur = " << reg(0,0,0.7) << endl;
@@ -77,16 +82,16 @@ real t = 0.;
 Vh<complex> Hz, hz;
 Vh<complex> Ex1 = exp(- 1i* k0 * z);
 Vh <complex> Ez,ez,Ey,ey,Ex,ex;
-Vh <complex> N0= 1. + (ns - 1.)*(sqrt(x^2.+y^2. + z^2.) < radiusOfInnerSpher);
-complex k2 = k0 * ns; // quantity sphere 1->1,2->2
+Vh <complex> N0= outReg + ns* inReg;
 
   
 //////////////////// calculation of the scattered field /////////////////////  
 problem MaxwellEquationsForH3D([Ex,Ey,Ez],[ex,ey,ez]) =
           int3d(Th)(Curl(ex,ey,ez)'*Curl(Ex,Ey,Ez))
-        - int3d(Th)(k0^2*N0^2 * [ex,ey,ez]'*[Ex,Ey,Ez])
-		+ int2d(Th,11)(1i*k0 * (ez * N.x - ex * N.z) * Ex1)
-		+ int2d(Th,12)(- 1i*k0 * ((ex * N.x + ey * N.y + ez * N.z)*(Ex * N.x + Ey * N.y + Ez * N.z) - (Ex * ex + Ey * ey + Ez * ez)))
+        - int3d(Th,1)(k0^2 * [ex,ey,ez]'*[Ex,Ey,Ez])
+		- int3d(Th,2)(k2^2 * [ex,ey,ez]'*[Ex,Ey,Ez])
+		+ int2d(Th,11)( 1i*k0 * ( ez * N.x - ex * N.z) * Ex1)
+		+ int2d(Th,12)(-1i*k0 * ((ex * N.x + ey * N.y + ez * N.z)*(Ex * N.x + Ey * N.y + Ez * N.z) - (Ex * ex + Ey * ey + Ez * ez)))
   ;
 
 MaxwellEquationsForH3D;
@@ -97,17 +102,18 @@ Vh realHz, realEy, realEx, realEx1;
 Vh<complex> HzInTime = 0.;
 Vh<complex> Ex1InTime = 0.;
 Vh<complex> E0=1.;
-Ex1InTime = Ex * exp (1i*(w*t));
+Ex1InTime = Ex + outReg * (E0 * exp (1i*(- k0*z)));
 realEx1 = real(Ex1InTime);
 
 cout << "k0 = " << k0 << endl;
 
+//Ex1InTime = outReg + 1i *0;
 
 ///// save for the matlab
 savemesh(Th,"diffractionSInS3d.mesh");
 ffSaveVh(Th,Vh,"diffractionSInS3d_vh.txt");
 ffSaveData(Ey,"diffractionSInS3d_Ey.txt");
-ffSaveData(Ex,"diffractionSInS3d_Ex.txt");
+ffSaveData(Ex1InTime,"diffractionSInS3d_Ex.txt");
 /////////////////////////
 
 
@@ -123,7 +129,7 @@ real[int] CameraViewUpValue = [0.7198,0.502367,-0.479078];
 real[int] CutPlaneOriginValue = [-0.5,-0.55,0.0335184];
 real[int] CutPlaneNormalValue = [0,0,1];
 
-	Ex1InTime = Ex + (E0 * exp (1i*(- k0*z)));
+	Ex1InTime = Ex + outReg * (E0 * exp (1i*(- k0*z)));
 	realEx1 = real(Ex1InTime);
 plot(realEx1,wait=1,value=1,
 	CameraPosition=CameraPositionValue,
@@ -139,7 +145,7 @@ for (int i=1; i < 100; i++)
     t = dt * i;
     cout<< "Time is" << t << endl;
 
-	Ex1InTime = Ex * exp (1i*(w*t)) + (E0 * exp (1i*(w*t - k0*z)));
+	Ex1InTime = Ex * exp (1i*(w*t)) + outReg * (E0 * exp (1i*(w*t - k0*z)));
 	realEx1 = real(Ex1InTime);
 	
 	plot(realEx1,wait=0,value=1,
