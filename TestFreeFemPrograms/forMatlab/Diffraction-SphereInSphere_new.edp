@@ -1,10 +1,12 @@
 verbosity=1;
 load "msh3"
 load "tetgen"
-load "mshmet"
 load "medit"
 include "MeshSurface.idp"
+
 include "ffmatlib.idp"
+
+
 
 real c0 = 299792458;        // speed of light in vacuum
 real mue0 = 4.*pi*1e-7;     // Permeability of free space
@@ -13,141 +15,108 @@ real Z0 = sqrt(mue0/eps0);  // Impedance of free space
 
 real    lambda0 = 10e-6;        // vacuum wavelength (in m)
 complex ns    = 10.-0*1i*70.;   // sphere refractive index (complex)
-real radiusOfInnerSpher = 1.5 * lambda0;
+ns = 2.;
 
 real lambda = 1.;        // vacuum wavelength (in 10*1e-6 m)
-     radiusOfInnerSpher = 0.5 * lambda;
+real radiusOfInnerSpher = 1.* lambda;
 
 real k0 = 2.* pi / lambda;
-//complex k = k0 * ns;
 real w = c0 * 2.* pi / lambda0;
+real alpha=1; 	//penalty term
 
  
 // 
-meshS ThSphOut;
-real volumetet;
+meshS ThHex;
+real volumetet;  // use in tetg.
 
-real hs = 0.2;
-ThSphOut = Sphere(4.,hs,8,1);
-meshS Thsph; 
-Thsph = Sphere(radiusOfInnerSpher,hs,7,1);
+//real step = 0.2/radiusOfInnerSpher;
+real step = lambda / 10;
+
+volumetet = (step^3)/6.;  
+step = lambda / 2;
+real hs = step;
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////// creating an inner sphere ///////////////////////////////////////
+meshS ThInnerSphere; //
+ThInnerSphere = Sphere(radiusOfInnerSpher,    step,11,1);
 
 
-////////////////////////////////
-meshS ThS = ThSphOut + Thsph; // "gluing" surface meshs to tolat boundary meshes
-//medit("Bounday mesh",ThS,wait=1);
+//////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////// creating an outer sphere ///////////////////////////////////////
+meshS ThOuterSphere; // 
+ThOuterSphere = Sphere(4.*radiusOfInnerSpher, step,12,1);
 
-// build a mesh of a axis parallel box with TetGen
+/////////////////////////////////////////////////////////////////////////////
+meshS ThS =  ThOuterSphere + ThInnerSphere;
+medit("Bounday mesh",ThS,wait=1);
+
+
 real[int] domaine = [0,0,0,1,volumetet,0,0,0.7,2,volumetet];
-mesh3 Th = tetg(ThS,switch="pqaAAYYQ",nbofregions=2,regionlist=domaine);    
+mesh3 Th = tetg(ThS,switch="pqaAAYYQ",nbofregions=2,regionlist=domaine);
 // Tetrahelize the interior of the cube with tetgen
-medit("tetg",Th,wait=1);
+// medit("tetg",Th,wait=1);
 savemesh(Th,"Th-hex-sph.mesh");
 
 fespace Ph(Th,P03d);
-fespace Vh(Th,P13d);
+fespace Vh(Th,P1);
 Ph reg=region;
 
 cout << "  centre = " << reg(0,0,0) << endl;
 cout << " exterieur = " << reg(0,0,0.7) << endl;
 
 macro Grad(u) [dx(u),dy(u),dz(u)] // EOM
-
-/*
-Vh uh,vh;
-Vh f = 200.*(sqrt(x^2.+y^2. + z^2.) <= 0.3);
-real gn = 1.;
-real cf= 1;
-problem Poisson(uh,vh)=
-    int3d(Th,1)( Grad(uh)'*Grad(vh)*0.0100) 
-  + int3d(Th,2)( Grad(uh)'*Grad(vh)*1.) 
-  + int3d(Th) (vh*f)
-  + on(8,uh=0)
-//  + on(7,uh=4)
- /* + int2d(Th,2,-2)(vh*gn)
-  + int2d(Th,3,-3)(cf*vh*uh)*/
- //; 
-  
-//plot(f,wait=1,fill=1);
-//  Poisson;
-
-
-
-
-
-
-
-
-
-
-
+macro Curl(ux, uy, uz)[dy(uz)-dz(uy), dz(ux)-dx(uz), dx(uy)-dy(ux)]// EOM
+macro Div(ux, uy, uz)[dx(ux) + dy(uy) + dz(uz)]// EOM
+macro CrossN(ux, uy, uz)[uy*N.z-uz*N.y, uz*N.x-ux*N.z, ux*N.y-uy*N.x]// EOM
+macro Curlabs(ux, uy, uz)[abs(dy(uz)-dz(uy)), abs(dz(ux)-dx(uz)), abs(dx(uy)-dy(ux))]// EOM
 
 
 real t = 0.;
 
 Vh<complex> Hz, hz;
-Vh<complex> Ey1 = exp(- 1i* k0 * x);
+Vh<complex> Ex1 = exp(- 1i* k0 * z);
 Vh <complex> Ez,ez,Ey,ey,Ex,ex;
-Vh <complex> N0= 1. + (2.-1.)*(sqrt(x^2.+y^2. + z^2.) < radiusOfInnerSpher);
+Vh <complex> N0= 1. + (ns - 1.)*(sqrt(x^2.+y^2. + z^2.) < radiusOfInnerSpher);
+complex k2 = k0 * ns; // quantity sphere 1->1,2->2
 
-Vh <complex> k = k0 * N0;
-complex k2 = k0 * 2;
-
-
-problem GelmhotzEquationForH3D([Ey],[ey])=
-  - int3d(Th,1)( Grad(Ey)'* Grad(ey))
-  + int3d(Th,1) (k0^2 * Ey* ey)
-  - int3d(Th,2)( Grad(Ey)'* Grad(ey))
-  + int3d(Th,2) (k2^2 * Ey* ey)
-  + int2d(Th,7)
-	(
-	   N.x*dx(Ey1)*ey
-	)
-  + int2d(Th,8)
-	(
-	   -1i*k0* Ey*ey
-	)
-  ; 
   
-  GelmhotzEquationForH3D;
+//////////////////// calculation of the scattered field /////////////////////  
+problem MaxwellEquationsForH3D([Ex,Ey,Ez],[ex,ey,ez]) =
+          int3d(Th)(Curl(ex,ey,ez)'*Curl(Ex,Ey,Ez))
+        - int3d(Th)(k0^2*N0^2 * [ex,ey,ez]'*[Ex,Ey,Ez])
+		+ int2d(Th,11)(1i*k0 * (ez * N.x - ex * N.z) * Ex1)
+		+ on(12, Ex=0)
+		+ on(12, Ez=0)
+		+ on(12, Ey=0)
+  ;
 
-Vh realHz, realEx, realEy,realEy1;
+MaxwellEquationsForH3D;
+ 
+  
+  
+Vh realHz, realEy, realEx, realEx1;
 Vh<complex> HzInTime = 0.;
-Vh<complex> Ey1InTime = 0.;
+Vh<complex> Ex1InTime = 0.;
 Vh<complex> E0=1.;
-Ey = Ey + 0*(E0 * exp (- 1i * k0 * x )) * (sqrt(x^2.+y^2. + z^2.) >= radiusOfInnerSpher);
+Ex1InTime = Ex * exp (1i*(w*t));
+realEx1 = real(Ex1InTime);
 
 cout << "k0 = " << k0 << endl;
-//cout << "k = " << k << endl;
+
 
 ///// save for the matlab
 savemesh(Th,"diffractionSInS3d.mesh");
 ffSaveVh(Th,Vh,"diffractionSInS3d_vh.txt");
 ffSaveData(Ey,"diffractionSInS3d_Ey.txt");
+ffSaveData(Ex,"diffractionSInS3d_Ex.txt");
 /////////////////////////
 
-realEy = real(Ey);
-plot(realEy,wait=1,fill=1);
+
+
+
   
   
-/* 
-real errm=1e-2;// level of error 
-for(int ii=0; ii<5; ii++)
-{
-  Poisson;
-  cout <<" u min, max = " <<  uh[].min << " "<< uh[].max << endl;
-  Vh h ;
-  h[]=mshmet(Th,uh,normalization=1,aniso=0,nbregul=1,hmin=1e-3,hmax=0.3,err=errm);//loptions=MSHloptions,doptions=MSHdoptions);
-  cout <<" h min, max = " <<  h[].min << " "<< h[].max << " " << h[].n << " " << Th.nv << endl;
-  // FFCS: add 3D view parameters
-  plot(uh,wait=1,fill=0,boundary=0,CutPlane=0,ShowMeshes=1,LabelColors=0);
-  errm*= 0.8;// change the level of error
-  cout << " Th" << Th.nv < " " << Th.nt << endl;
-  Th=tetgreconstruction(Th,switch="raAQ",sizeofvolume=h*h*h/6.);
-//  medit("U-adap-iso-"+ii,Th,uh,wait=1);
-}*/
-  
-  /*
   
 // FFCS: with 3D view parameters
 real[int] CameraPositionValue = [3.50634,-2.51489,2.60313];
@@ -155,19 +124,32 @@ real[int] CameraFocalPointValue = [0.0604689,-0.304636,-0.256484];
 real[int] CameraViewUpValue = [0.7198,0.502367,-0.479078];
 real[int] CutPlaneOriginValue = [-0.5,-0.55,0.0335184];
 real[int] CutPlaneNormalValue = [0,0,1];
-plot(uh,wait=1, nbiso=6,
-	BorderAsMesh = 1,
+
+	Ex1InTime = Ex + (E0 * exp (1i*(- k0*z)));
+	realEx1 = real(Ex1InTime);
+plot(realEx1,wait=1,value=1,
 	CameraPosition=CameraPositionValue,
 	CameraFocalPoint=CameraFocalPointValue,
 	CameraViewUp=CameraViewUpValue,
 	CutPlaneOrigin=CutPlaneOriginValue,
 	CutPlaneNormal = CutPlaneNormalValue);
-//medit("   uh ",Th, uh,wait=1); 
 
-///// save for the matlab
-savemesh(Th,"diffractionSInS3d.mesh");
-ffSaveVh(Th,Vh,"diffractionSInS3d_vh.txt");
-ffSaveData(uh,"diffractionSInS3d_Ey.txt");
-/////////////////////////
-*/
+
+real dt = 2.* pi/ w / 20;
+for (int i=1; i < 100; i++)
+{
+    t = dt * i;
+    cout<< "Time is" << t << endl;
+
+	Ex1InTime = Ex * exp (1i*(w*t)) + (E0 * exp (1i*(w*t - k0*z)));
+	realEx1 = real(Ex1InTime);
+	
+	plot(realEx1,wait=0,value=1,
+	CameraPosition=CameraPositionValue,
+	CameraFocalPoint=CameraFocalPointValue,
+	CameraViewUp=CameraViewUpValue,
+	CutPlaneOrigin=CutPlaneOriginValue,
+	CutPlaneNormal = CutPlaneNormalValue);
+}
+
 

@@ -49,7 +49,7 @@ meshS ThS = ThSphOut + Thsph; // "gluing" surface meshs to tolat boundary meshes
 //medit("Bounday mesh",ThS,wait=1);
 
 // build a mesh of a axis parallel box with TetGen
-real[int] domaine = [0,0,0,1,volumetet,0,0,0.7,2,volumetet];
+real[int] domaine = [0,0,0,33,volumetet,0,0,0.7,55,volumetet];
 mesh3 Th = tetg(ThS,switch="pqaAAYYQ",nbofregions=2,regionlist=domaine);    
 // Tetrahelize the interior of the cube with tetgen
 medit("tetg",Th,wait=1);
@@ -132,9 +132,26 @@ macro Curlabs(ux, uy, uz)[abs(dy(uz)-dz(uy)), abs(dz(ux)-dx(uz)), abs(dx(uy)-dy(
 func Pk = Edge03d;
 func PkPart = Edge03ds0;
 
+macro Grad3(ux, uy, uz) [dx(ux)+dx(uy)+dx(uz), dy(ux)+dy(uy)+dy(uz), dz(ux)+dz(uy)+dz(uz)] // EOM
 
 
- 
+problem MaxwellEquationsForH3D([Ex,Ey,Ez],[ex,ey,ez]) =
+          int3d(Th)(Grad3(ex,ey,ez)'*Grad3(Ex,Ey,Ez))
+        - int3d(Th,33)(k0^2 * [ex,ey,ez]'*[Ex,Ey,Ez])
+        - int3d(Th,55)(k2^2*[ex,ey,ez]'*[Ex,Ey,Ez])
+          + int2d(Th,11)
+		  (
+   		     -N.x*dx(Ey1)*ey
+		   )
+		   + int2d(Th,12)
+		   (
+		     1i*k0* Ey*ey
+		   )
+		   //- intN1(Th, 2)(1i*k0*CrossN(ex,ey,ez)'*CrossN(Ex,Ey,Ez));
+  ;
+
+
+/* 
 problem MaxwellEquationsForH3D([Ex,Ey,Ez],[ex,ey,ez]) =
           int3d(Th)(Curl(ex,ey,ez)'*Curl(Ex,Ey,Ez))
         - int3d(Th)(k0^2*N0^2 * [ex,ey,ez]'*[Ex,Ey,Ez])
@@ -142,14 +159,14 @@ problem MaxwellEquationsForH3D([Ex,Ey,Ez],[ex,ey,ez]) =
        // - int3d(Th,2)(k2^2*[ex,ey,ez]'*[Ex,Ey,Ez])
           + int2d(Th,11)
 		  (
-   		      N.x*dx(Ey1)*ey
+   		     -N.x*dx(Ey1)*ey
 		   )
 		   + int2d(Th,12)
 		   (
-		     -1i*k0* Ey*ey
+		     1i*k0* Ey*ey
 		   )
-		  // - intN1(Th, 2)(1i*k0*CrossN(ex,ey,ez)'*CrossN(Ex,Ey,Ez));
-  ;
+		   //- intN1(Th, 2)(1i*k0*CrossN(ex,ey,ez)'*CrossN(Ex,Ey,Ez));
+  ;*/
   
   
 MaxwellEquationsForH3D;

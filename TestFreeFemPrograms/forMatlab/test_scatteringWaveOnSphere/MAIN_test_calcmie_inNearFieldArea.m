@@ -26,13 +26,16 @@ ns = [1., 1.3, 1.8];      % sphere refractive index (complex)
 dia = [100e-9];     % sphere diameter
 ns = [10+1i*70];    % sphere refractive index (complex)
 
+dia = [2e-6];     % sphere diameter
+ns = [2];    % sphere refractive index (complex)
+
 nm = 1.;            % outer medium refractive index (real)
 % lambda = 600e-9;    % vacuum wavelength
-lambda = 10e-6;     % vacuum wavelength (in m)
+lambda = 1e-6;     % vacuum wavelength (in m)
 nang = 1800;        % number of far field angles to evaluate
 
-sx = 1.5*dia(end);    % size of grid in x
-sy = 1.5*dia(end);    % size of grid in y
+sx = 4*dia(end);    % size of grid in x
+sy = 4*dia(end);    % size of grid in y
 
 Nx = 200;           % number of grid points in x
 Ny = 200;           % number of grid points in y
@@ -147,8 +150,8 @@ disp(getEfficiencies(C, dia(end)/2., 2));
 % lambda = 600e-9;    % vacuum wavelength
 % nang = 1800;        % number of far field angles to evaluate
 
-sx = 1.5*dia(end);    % size of grid in x
-sz = 1.5*dia(end);    % size of grid in y
+sx = 4*dia(end);    % size of grid in x
+sz = 4*dia(end);    % size of grid in y
 
 Nx = 200;           % number of grid points in x
 Nz = 200;           % number of grid points in z
@@ -219,8 +222,8 @@ end %for ifld=1:length(fldlst)
 % lambda = 600e-9;    % vacuum wavelength
 % nang = 1800;        % number of far field angles to evaluate
 
-sy = 1.5*dia(end);    % size of grid in y
-sz = 1.5*dia(end);    % size of grid in y
+sy = 4*dia(end);    % size of grid in y
+sz = 4*dia(end);    % size of grid in y
 
 Ny = 200;           % number of grid points in y
 Nz = 200;           % number of grid points in z
