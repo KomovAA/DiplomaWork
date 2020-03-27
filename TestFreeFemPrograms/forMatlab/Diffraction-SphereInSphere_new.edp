@@ -31,7 +31,7 @@ meshS ThHex;
 real volumetet;  // use in tetg.
 
 //real step = 0.2/radiusOfInnerSpher;
-real step = lambda / 4;
+real step = lambda / 2;
 
 volumetet = (step^3)/6.;  
 //step = lambda / 2;
@@ -88,8 +88,7 @@ Vh <complex> N0= outReg + ns* inReg;
 //////////////////// calculation of the scattered field /////////////////////  
 problem MaxwellEquationsForH3D([Ex,Ey,Ez],[ex,ey,ez]) =
           int3d(Th)(Curl(ex,ey,ez)'*Curl(Ex,Ey,Ez))
-        - int3d(Th,1)(k0^2 * [ex,ey,ez]'*[Ex,Ey,Ez])
-		- int3d(Th,2)(k2^2 * [ex,ey,ez]'*[Ex,Ey,Ez])
+        - int3d(Th)(k0^2 * N0^2 * [ex,ey,ez]'*[Ex,Ey,Ez])
 		+ int2d(Th,11)( 1i*k0 * ( ez * N.x - ex * N.z) * Ex1)
 		+ int2d(Th,12)(-1i*k0 * ((ex * N.x + ey * N.y + ez * N.z)*(Ex * N.x + Ey * N.y + Ez * N.z) - (Ex * ex + Ey * ey + Ez * ez)))
   ;
