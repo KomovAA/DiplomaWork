@@ -31,7 +31,7 @@ meshS ThHex;
 real volumetet;  // use in tetg.
 
 //real step = 0.2/radiusOfInnerSpher;
-real step = lambda / 8;
+real step = lambda / 4;
 
 volumetet = (step^3)/6.;  
 //step = lambda / 2;
