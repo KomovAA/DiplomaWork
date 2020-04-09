@@ -1,0 +1,170 @@
+verbosity=1;
+load "msh3"
+load "tetgen"
+load "medit"
+include "MeshSurface.idp"
+
+include "ffmatlib.idp"
+
+
+
+
+real c0 = 299792458;        // speed of light in vacuum
+real mue0 = 4.*pi*1e-7;     // Permeability of free space
+real eps0 = 1./c0^2/mue0;   // Permittivity of free space
+real Z0 = sqrt(mue0/eps0);  // Impedance of free space
+
+real    lambda0 = 10e-6;        // vacuum wavelength (in m)
+complex ns    = 10.-0*1i*70.;   // sphere refractive index (complex)
+ns = 2.;
+
+real lambda = 1.;        // vacuum wavelength (in 10*1e-6 m)
+real radiusOfInnerSpher = lambda;
+
+real k0 = 2.* pi / lambda;
+complex k2 = k0 * ns;
+real w = c0 * 2.* pi / lambda0;
+real alpha=1; 	//penalty term
+
+ 
+// 
+meshS ThHex;
+real volumetet;  // use in tetg.
+
+//real step = 0.2/radiusOfInnerSpher;
+real step = lambda / 4;
+
+volumetet = (step^3)/6.;  
+//step = lambda / 2;
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////// creating an inner spheres ///////////////////////////////////////
+////// zero iteration
+meshS ThInnerSphere; //
+ThInnerSphere = Sphere(radiusOfInnerSpher,    step,   11, 1);
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////// creating an outer sphere ///////////////////////////////////////
+meshS ThOuterSphere; // 
+real radiusOfOuterSphere = 4.* lambda;
+ThOuterSphere = Sphere(radiusOfOuterSphere, step,12,1);
+
+meshS ThS;
+// =  ThOuterSphere + ThInnerSphere;
+//medit("Bounday mesh",ThS,wait=1);
+
+
+//real[int] domaine = [0,0,0,1,volumetet,0.,0,0.,2,volumetet];
+//mesh3 Th = tetg(ThS,switch="pqaAAYYQ",nbofregions=2,regionlist=domaine);
+// Tetrahelize the interior of the cube with tetgen
+//medit("1st iteration",Th,wait=1);
+
+
+
+/////////////////////////// first iteration ///////////////////////////////////////////////////
+
+meshS ThInnerSphere2 = Sphere(radiusOfInnerSpher/2, step/2, 13, 1);
+real ddx = radiusOfInnerSpher + radiusOfInnerSpher/2;
+ThInnerSphere2 = movemeshS(ThInnerSphere2,transfo=[x + ddx,y,z]);
+meshS ThInnerSphere3 = Sphere(radiusOfInnerSpher/2, step/2, 14, 1);
+ThInnerSphere3 = movemeshS(ThInnerSphere3,transfo=[x - ddx,y,z]);
+
+meshS ThInnerSphere4 = Sphere(radiusOfInnerSpher/2, step/2, 15, 1);
+ThInnerSphere4 = movemeshS(ThInnerSphere4,transfo=[x,y + ddx,z]);
+meshS ThInnerSphere5 = Sphere(radiusOfInnerSpher/2, step/2, 16, 1);
+ThInnerSphere5 = movemeshS(ThInnerSphere5,transfo=[x,y - ddx,z]);
+//medit("Bounday mesh",ThInnerSphere,wait=1);
+
+
+/////////////////////////////////////////////////////////////////////////////
+ThS =  ThOuterSphere + ThInnerSphere + ThInnerSphere2 + ThInnerSphere3 + ThInnerSphere4 + ThInnerSphere5;
+//medit("Bounday mesh",ThS,wait=1);
+
+
+real[int] domaine  = [0,0,0,1,volumetet,0.,0,0.,2,volumetet,0,0,0,3,volumetet,0.,0,0.,4,volumetet,0,0,0,5,volumetet,0,0,0,6,volumetet];
+mesh3 Th = tetg(ThS,switch="pqaAAYYQ",nbofregions=6,regionlist=domaine);
+// Tetrahelize the interior of the cube with tetgen
+medit("1st iteration",Th,wait=1);
+
+fespace Ph(Th,P03d);
+fespace Vh(Th,P1);
+Ph reg = region;           // function that returns region number of a point XY
+Ph inReg  = sqrt(x^2.+y^2. + z^2.) < radiusOfInnerSpher;  //subdomains for inside the sratterer
+Ph outReg = sqrt(x^2.+y^2. + z^2.) > radiusOfInnerSpher;  //subdomains for outside the scatterer
+Vh dd = inReg;
+
+//plot(dd,wait=1,value=1);
+
+cout << "  centre = " << reg(0,0,0) << endl;
+cout << " exterieur = " << reg(0,0,0.7) << endl;
+
+macro Grad(u) [dx(u),dy(u),dz(u)] // EOM
+macro Curl(ux, uy, uz)[dy(uz)-dz(uy), dz(ux)-dx(uz), dx(uy)-dy(ux)]// EOM
+macro Div(ux, uy, uz)[dx(ux) + dy(uy) + dz(uz)]// EOM
+macro CrossN(ux, uy, uz)[uy*N.z-uz*N.y, uz*N.x-ux*N.z, ux*N.y-uy*N.x]// EOM
+macro Curlabs(ux, uy, uz)[abs(dy(uz)-dz(uy)), abs(dz(ux)-dx(uz)), abs(dx(uy)-dy(ux))]// EOM
+
+
+real t = 0.;
+
+Vh<complex> Hz, hz;
+Vh<complex> Ex1 = exp(- 1i* k0 * z);
+Vh <complex> Ez,ez,Ey,ey,Ex,ex;
+Vh <complex> N0;
+
+
+  func complex Eps() {
+    if (Th(x,y,z).region == Th(0.0,0.0,0.0).region || Th(x,y,z).region == Th(ddx,0.0,0.0).region || Th(x,y,z).region == Th(-ddx,0.0,0.0).region || Th(x,y,z).region == Th(0.0, ddx, 0.0).region || Th(x,y,z).region == Th(0.0,-ddx,0.0).region) 
+        return ns^2;
+    else 
+        return 1.0;
+}
+
+//////////////////// calculation of the scattered field /////////////////////  
+problem MaxwellEquationsForH3D([Ex,Ey,Ez],[ex,ey,ez]) =
+          int3d(Th)(Curl(ex,ey,ez)'*Curl(Ex,Ey,Ez))
+        - int3d(Th)(k0^2 * Eps() * [ex,ey,ez]'*[Ex,Ey,Ez])
+		+ int2d(Th,11)( 1i*k0 * ( ez * N.x - ex * N.z) * Ex1)
+		+ int2d(Th,13)( 1i*k0 * ( ez * N.x - ex * N.z) * Ex1)
+		+ int2d(Th,14)( 1i*k0 * ( ez * N.x - ex * N.z) * Ex1)
+		+ int2d(Th,15)( 1i*k0 * ( ez * N.x - ex * N.z) * Ex1)
+		+ int2d(Th,16)( 1i*k0 * ( ez * N.x - ex * N.z) * Ex1)
+		+ int2d(Th,12)(-1i*k0 * ((ex * N.x + ey * N.y + ez * N.z)*(Ex * N.x + Ey * N.y + Ez * N.z) - (Ex * ex + Ey * ey + Ez * ez)))
+  ;
+
+MaxwellEquationsForH3D;
+ 
+
+ 
+Vh realHz, realEy, realEx, realEx1;
+Vh<complex> HzInTime = 0.;
+Vh<complex> Ex1InTime = 0.;
+Vh<complex> E0=1.;
+Ex1InTime = Ex + outReg * (E0 * exp (1i*(- k0*z)));
+realEx1 = real(Ex1InTime);
+
+cout << "k0 = " << k0 << endl;
+
+//Ex1InTime = outReg + 1i *0;
+
+///// save for the matlab
+savemesh(Th,"diffractionSInS3d.mesh");
+ffSaveVh(Th,Vh,"diffractionSInS3d_vh.txt");
+ffSaveData(Ey,"diffractionSInS3d_Ey.txt");
+ffSaveData(Ex1InTime,"diffractionSInS3d_Ex.txt");
+/////////////////////////
+Ex1InTime = Ex + outReg * (E0 * exp (1i*(- k0*z)));
+	realEx1 = real(Ex1InTime);
+plot(realEx1,wait=1,value=1);
+
+real dt = 2.* pi/ w / 20;
+for (int i=1; i < 100; i++)
+{
+    t = dt * i;
+    cout<< "Time is" << t << endl;
+
+	Ex1InTime = Ex * exp (1i*(w*t)) + outReg * (E0 * exp (1i*(w*t - k0*z)));
+	realEx1 = real(Ex1InTime);
+	
+	plot(realEx1,wait=0,value=1);
+}
