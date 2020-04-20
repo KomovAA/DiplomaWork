@@ -172,7 +172,7 @@ Vh <complex> N0= outReg + ns* inReg;
 func complex Eps() {
 if (Th(x,y,z).region == Th(0.0,0.0,0.0).region || Th(x,y,z).region == Th(ddx,0.0,0.0).region || Th(x,y,z).region == Th(-ddx,0.0,0.0).region || Th(x,y,z).region == Th(0.0, ddx, 0.0).region || Th(x,y,z).region == Th(0.0,-ddx,0.0).region ||
 	Th(x,y,z).region == Th(ddx,ddy,0.0).region || Th(x,y,z).region == Th(ddx+ddy,0.0,0.0).region || Th(x,y,z).region == Th(ddx,-ddy,0.0).region ||
-	Th(x,y,z).region == Th(-ddx,ddy,0.0).region || Th(x,y,z).region == Th(-ddy-ddy,0.0,0.0).region || Th(x,y,z).region == Th(-ddx,-ddy,0.0).region ||
+	Th(x,y,z).region == Th(-ddx,ddy,0.0).region || Th(x,y,z).region == Th(-ddx-ddy,0.0,0.0).region || Th(x,y,z).region == Th(-ddx,-ddy,0.0).region ||
 	Th(x,y,z).region == Th(0.0,ddx+ddy,0.0).region || Th(x,y,z).region == Th(ddy,ddx,0.0).region || Th(x,y,z).region == Th(-ddy,ddx,0.0).region ||
 	Th(x,y,z).region == Th(0.0,-ddx-ddy,0.0).region || Th(x,y,z).region == Th(ddy,-ddx,0.0).region || Th(x,y,z).region == Th(-ddy,-ddx,0.0).region)
         return ns^2;
