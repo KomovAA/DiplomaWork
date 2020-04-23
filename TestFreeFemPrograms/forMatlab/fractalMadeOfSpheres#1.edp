@@ -98,8 +98,21 @@ problem MaxwellEquationsForH3D([Ex,Ey,Ez],[ex,ey,ez]) =
   ;
 
 MaxwellEquationsForH3D;
- 
-  
+
+Vh <complex> Fi,teta,Hy,Sx,Sy,Sz,Sr,Hx;
+real R = 3. * lambda;
+
+Sx = 1/2 * (Ey*Hz + Ez*Hy);
+Sy = 1/2 * (Ez*Hx + Ex*Hz);
+Sz = 1/2 * (Ex*Hy + Ey*Hx);
+Sr = Sx * cos(Fi) * sin(teta) + Sy * sin(Fi) * sin (teta) + Sz * cos(teta);
+
+problem TotalScatteringCrossSection([Ex,Ey,Ez],[Hx,Hy,Hz]) = 
+          int2d(Th) ((R^2 * Sr)/(1/2 * (Ey*Hz + Ez*Hy)))
+		 +int2d(Th) ((R^2 * Sr)/(1/2 * (Ez*Hx + Ex*Hz)))
+		 +int2d(Th) ((R^2 * Sr)/(1/2 * (Ex*Hy + Ey*Hx)))
+		 ;
+
  
 Vh realHz, realEy, realEx, realEx1;
 Vh<complex> HzInTime = 0.;
