@@ -102,7 +102,9 @@ MaxwellEquationsForH3D;
 
 real R = 3. * lambda;
 
-[Hx,Hy,Hz] = 1i/k0 * Curl(Ex,Ey,Ez);
+Hx = 1i/k0 * (dy(Ez)-dz(Ey));
+Hy = 1i/k0 * (dz(Ex)-dx(Ez));
+Hz = 1i/k0 * (dx(Ey)-dy(Ex));
 Sx = 1/2 * (Ey*Hz + Ez*Hy);
 Sy = 1/2 * (Ez*Hx + Ex*Hz);
 Sz = 1/2 * (Ex*Hy + Ey*Hx);
