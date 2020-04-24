@@ -78,7 +78,7 @@ real t = 0.;
 
 Vh<complex> Hz, hz;
 Vh<complex> Ex1 = exp(- 1i* k0 * z);
-Vh <complex> Ez,ez,Ey,ey,Ex,ex;
+Vh <complex> Ez,ez,Ey,ey,Ex,ex,Fi,teta,Hy,Sx,Sy,Sz,Sr,Hx;
 Vh <complex> N0;
 
   
@@ -99,21 +99,17 @@ problem MaxwellEquationsForH3D([Ex,Ey,Ez],[ex,ey,ez]) =
 
 MaxwellEquationsForH3D;
 
-Vh <complex> Fi,teta,Hy,Sx,Sy,Sz,Sr,Hx;
+
 real R = 3. * lambda;
 
+[Hx,Hy,Hz] = 1i/k0 * Curl(Ex,Ey,Ez);
 Sx = 1/2 * (Ey*Hz + Ez*Hy);
 Sy = 1/2 * (Ez*Hx + Ex*Hz);
 Sz = 1/2 * (Ex*Hy + Ey*Hx);
 Sr = Sx * cos(Fi) * sin(teta) + Sy * sin(Fi) * sin (teta) + Sz * cos(teta);
 
-problem TotalScatteringCrossSection([Ex,Ey,Ez],[Hx,Hy,Hz]) = 
-          int2d(Th) ((R^2 * Sr)/(1/2 * (Ey*Hz + Ez*Hy)))
-		 +int2d(Th) ((R^2 * Sr)/(1/2 * (Ez*Hx + Ex*Hz)))
-		 +int2d(Th) ((R^2 * Sr)/(1/2 * (Ex*Hy + Ey*Hx)))
-		 ;
 
- 
+
 Vh realHz, realEy, realEx, realEx1;
 Vh<complex> HzInTime = 0.;
 Vh<complex> Ex1InTime = 0.;
