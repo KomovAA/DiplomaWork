@@ -110,6 +110,12 @@ Sy = 1/2 * (Ez*Hx + Ex*Hz);
 Sz = 1/2 * (Ex*Hy + Ey*Hx);
 Sr = Sx * cos(Fi) * sin(teta) + Sy * sin(Fi) * sin (teta) + Sz * cos(teta);
 
+solve TotalScatteringCrossSection([Hx,Hy,Hz],[Ex,Ey,Ez]) = 
+          int2d(Th) ((R^2 * Sr)/(1/2 * (Ey*Hz + Ez*Hy)))
+		 +int2d(Th) ((R^2 * Sr)/(1/2 * (Ez*Hx + Ex*Hz)))
+		 +int2d(Th) ((R^2 * Sr)/(1/2 * (Ex*Hy + Ey*Hx)))
+		 ;
+
 
 
 Vh realHz, realEy, realEx, realEx1;
