@@ -111,16 +111,16 @@ Sy = 1/2 * (Ez*Hx + Ex*Hz);
 Sz = 1/2 * (Ex*Hy + Ey*Hx);
 Sr = Sx * cos(Phi) * sin(teta) + Sy * sin(Phi) * sin (teta) + Sz * cos(teta);
 
-Si = 1/2 * [Hx,Hy,Hz]'*[Ex,Ey,Ez];
+Si = 1.;
 
 SigmD = R^2 * Sr/Si;
 SigmDx = R^2 * Sr/Sx;
 SigmDy = R^2 * Sr/Sy;
 SigmDz = R^2 * Sr/Sz;
-plot(SigmD,wait=1,value=1);
-/*
+
+
 solve TotalScatteringCrossSection([Hx,Hy,Hz],[Ex,Ey,Ez]) = 
-          int2d(Th,11) (R^2 * Sr/Si)
+          int2d(Th,11) (R^2 * ((1/2 * (Ey*Hz + Ez*Hy)) * cos(Phi) * sin(teta) + (1/2 * (Ez*Hx + Ex*Hz)) * sin(Phi) * sin (teta) + (Sz = 1/2 * (Ex*Hy + Ey*Hx)) * cos(teta)))
 		 ; 
 		 /*
 solve AbsorptionCrossSection(Hz,hz) = 
