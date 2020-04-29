@@ -136,7 +136,7 @@ nR = 1.; // coef refraction
 
 EpsI = 2*real(ns)*imag(ns);
 
-complex sigmaAbsorption = (int3d(Th) ( InInner() *(k0 * EpsI * (Ex * conj(Ex))))); 
+complex sigmaAbsorption = (int3d(Th) ( InInner() *(k0 * EpsI * (Ex * conj(Ex)  +   Ey * conj(Ey) +   Ez * conj(Ez))))); 
 cout << "sigmaAbsorption = " << sigmaAbsorption << endl;		 
 
 
