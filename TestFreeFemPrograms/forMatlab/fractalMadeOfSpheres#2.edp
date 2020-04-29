@@ -164,8 +164,13 @@ complex sigmaTotal = (int2d(Th, 123)(R^2 * Sr));
 
 cout << "sigmaTotal = " << sigmaTotal << endl;
 
-complex sigmaAbsorption = (int3d(Th) ( InInner() *(k0 * eps0 * E^2))); 
-cout << "sigmaAbsorption = " << sigmaAbsorption << endl;	
+Vh <complex> EpsI; // EpsI - epsilon imaginary
+
+EpsI = 2*real(ns)*imag(ns);
+
+complex sigmaAbsorption = (int3d(Th) ( InInner() *(k0 * EpsI * (Ex * conj(Ex)  +   Ey * conj(Ey) +   Ez * conj(Ez))))); 
+cout << "sigmaAbsorption = " << sigmaAbsorption << endl;		 
+
  
 Vh realHz, realEy, realEx, realEx1;
 Vh<complex> HzInTime = 0.;

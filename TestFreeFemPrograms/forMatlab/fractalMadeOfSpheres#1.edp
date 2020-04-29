@@ -130,9 +130,7 @@ complex sigmaTotal = (int2d(Th, 123)(R^2 * Sr));
 
 cout << "sigmaTotal = " << sigmaTotal << endl;
 
-Vh nR; // nR - n real
-Vh <complex> nI,EpsI; // nI - n Imaginary / EpsI - epsilon imaginary
-nR = 1.; // coef refraction
+Vh <complex> EpsI; // EpsI - epsilon imaginary
 
 EpsI = 2*real(ns)*imag(ns);
 
