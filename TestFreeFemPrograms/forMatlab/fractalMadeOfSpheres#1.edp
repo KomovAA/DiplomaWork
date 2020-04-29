@@ -133,7 +133,7 @@ cout << "sigmaTotal = " << sigmaTotal << endl;
 Vh nR; // nR - n real
 Vh <complex> nI,EpsI; // nI - n Imaginary / EpsI - epsilon imaginary
 nR = 1.; // coef refraction
-EpsI = 2 * nR * (nR - sqrt(eps0));
+EpsI = 2 * nR * sqrt(nR^2 - eps0);
 
 complex sigmaAbsorption = (int3d(Th) ( InInner() *(k0 * EpsI * (Ex * conj(Ex))))); 
 cout << "sigmaAbsorption = " << sigmaAbsorption << endl;		 
