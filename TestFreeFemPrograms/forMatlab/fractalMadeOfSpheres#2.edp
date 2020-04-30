@@ -113,7 +113,7 @@ real t = 0.;
 
 Vh<complex> Hz, hz;
 Vh<complex> Ex1 = exp(- 1i* k0 * z);
-Vh <complex> Ez,ez,Ey,ey,Ex,ex,teta,Hy,Sx,Sy,Sz,Sr,Hx,Si,SigmD;
+Vh <complex> Ez,ez,Ey,ey,Ex,ex,Hy,Sx,Sy,Sz,Sr,Hx,Si,SigmD;
 Vh <complex> N0;
 
 
@@ -147,6 +147,7 @@ MaxwellEquationsForH3D;
  
 real R = 3. * lambda;
 real Phi = pi/2.;
+real teta = acos(sqrt(x^2 + y^2 + z^2));
 complex E = 1.;
 Hx = 1i/k0 * (dy(Ez)-dz(Ey));
 Hy = 1i/k0 * (dz(Ex)-dx(Ez));
@@ -155,12 +156,12 @@ Sx = 1./2. * (Ey*Hz + Ez*Hy);
 Sy = 1/2 * (Ez*Hx + Ex*Hz);
 Sz = 1/2 * (Ex*Hy + Ey*Hx);
 Sr = Sx * cos(Phi) * sin(teta) + Sy * sin(Phi) * sin (teta) + Sz * cos(teta);
-
+real R2 = x^2+y^2+z^2;
 Si = 1.;
 
-SigmD = R^2 * Sr/Si;
+SigmD = R2 * Sr/Si;
 	 
-complex sigmaTotal = (int2d(Th, 123)(R^2 * Sr));
+complex sigmaTotal = (int2d(Th, 123)(R2 * Sr));
 
 cout << "sigmaTotal = " << sigmaTotal << endl;
 
