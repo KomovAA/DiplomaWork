@@ -15,11 +15,12 @@ real eps0 = 1./c0^2/mue0;   // Permittivity of free space
 real Z0 = sqrt(mue0/eps0);  // Impedance of free space
 
 real    lambda0 = 10e-6;        // vacuum wavelength (in m)
-complex ns    = 10.-0*1i*70.;   // sphere refractive index (complex)
+complex ns    = 10.- 1i*70.;   // sphere refractive index (complex)
 ns = 2.;
+// ns = 1.; // test - uniform media
 
 real lambda = 1.;        // vacuum wavelength (in 10*1e-6 m)
-real radiusOfInnerSpher = lambda;
+real radiusOfInnerSpher = lambda / 10.;
 
 real k0 = 2.* pi / lambda;
 complex k2 = k0 * ns;
@@ -32,33 +33,40 @@ meshS ThHex;
 real volumetet;  // use in tetg.
 
 //real step = 0.2/radiusOfInnerSpher;
-real step = lambda / 4;
+real step = lambda / 40.;
+//cout << "step = "<< step << endl;
 
-volumetet = (step^3)/6.;  
+real volumetetIn = (step^3)/6.;  
 //step = lambda / 2;
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////// creating an inner spheres ///////////////////////////////////////
 ////// zero iteration
 meshS ThInnerSphere; //
-ThInnerSphere = Sphere(radiusOfInnerSpher,    step,   11, 1);
+ThInnerSphere = Sphere(radiusOfInnerSpher,    step,   11, -1);
+medit("Scatterer", ThInnerSphere,wait=1);
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////// creating an outer sphere ///////////////////////////////////////
+step = lambda / 2.;
+volumetet = (step^3)/6.;  
 meshS ThOuterSphere; // 
 real radiusOfOuterSphere = 4.* lambda;
 ThOuterSphere = Sphere(radiusOfOuterSphere, step,12,1);
 
 meshS ThVirtualSphere; // 
 real radiusOfVirtualSphere = 3.* lambda;
-ThVirtualSphere = Sphere(radiusOfVirtualSphere, step, 123, 1);
+ThVirtualSphere = Sphere(radiusOfVirtualSphere, step, 123, -1);
 
 meshS ThS =  ThOuterSphere + ThInnerSphere + ThVirtualSphere;
+//meshS ThS =  ThInnerSphere + ThOuterSphere;
 //medit("Bounday mesh",ThS,wait=1);
 
 
-real[int] domaine = [0,0,0,1,volumetet,0.,0,0.,2,volumetet,0.,0,0.,3,volumetet];
+real[int] domaine = [0,0,radiusOfOuterSphere-0.1,1,volumetet,0.,0,0.,2,volumetetIn,0.,0,radiusOfVirtualSphere-0.1,3,volumetet];
 mesh3 Th = tetg(ThS,switch="pqaAAYYQ",nbofregions=3,regionlist=domaine);
+//real[int] domaine = [0,0,radiusOfOuterSphere-0.2,1,volumetet,0.,0,0.,2,volumetetIn];
+//mesh3 Th = tetg(ThS,switch="pqaAAYYQ",nbofregions=2,regionlist=domaine);
 // Tetrahelize the interior of the cube with tetgen
 medit("1st iteration",Th,wait=1);
 
@@ -69,7 +77,8 @@ Ph inReg  = sqrt(x^2.+y^2. + z^2.) < radiusOfInnerSpher;  //subdomains for insid
 Ph outReg = sqrt(x^2.+y^2. + z^2.) > radiusOfInnerSpher;  //subdomains for outside the scatterer
 
 cout << "  centre = " << reg(0,0,0) << endl;
-cout << " exterieur = " << reg(0,0,0.7) << endl;
+cout << " virtual = " << reg(0,0,radiusOfVirtualSphere-0.1) << endl;
+cout << " exterieur = " << reg(0,0,radiusOfOuterSphere-0.1) << endl;
 
 macro Grad(u) [dx(u),dy(u),dz(u)] // EOM
 macro Curl(ux, uy, uz)[dy(uz)-dz(uy), dz(ux)-dx(uz), dx(uy)-dy(ux)]// EOM
@@ -142,7 +151,7 @@ Vh realHz, realEy, realEx, realEx1;
 Vh<complex> HzInTime = 0.;
 Vh<complex> Ex1InTime = 0.;
 Vh<complex> E0=1.;
-Ex1InTime = Ex + outReg * (E0 * exp (1i*(- k0*z)));
+Ex1InTime = Ex + (1. - InInner()) * Ex1;
 realEx1 = real(Ex1InTime);
 
 cout << "k0 = " << k0 << endl;
@@ -155,7 +164,7 @@ ffSaveVh(Th,Vh,"diffractionSInS3d_vh.txt");
 ffSaveData(Ey,"diffractionSInS3d_Ey.txt");
 ffSaveData(Ex1InTime,"diffractionSInS3d_Ex.txt");
 /////////////////////////
-Ex1InTime = Ex + outReg * (E0 * exp (1i*(- k0*z)));
+Ex1InTime = Ex + (1. - InInner()) * Ex1;
 	realEx1 = real(Ex1InTime);
 plot(realEx1,wait=1,value=1);
 
@@ -165,7 +174,7 @@ for (int i=1; i < 100; i++)
     t = dt * i;
     cout<< "Time is" << t << endl;
 
-	Ex1InTime = Ex * exp (1i*(w*t)) + outReg * (E0 * exp (1i*(w*t - k0*z)));
+	Ex1InTime = Ex * exp (1i*(w*t)) + (1. - InInner()) * (Ex1 * exp (1i*(w*t)));
 	realEx1 = real(Ex1InTime);
 	
 	plot(realEx1,wait=0,value=1);
