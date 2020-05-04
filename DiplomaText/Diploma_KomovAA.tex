@@ -1,0 +1,321 @@
+\documentclass[%
+specialist,  % тип документа
+%natbib,      % использовать пакет natbib для "сжатия" цитирований
+subf,        % использовать пакет subcaption для вложенной нумерации рисунков
+href,        % использовать пакет hyperref для создания гиперссылок
+colorlinks,  % цветные гиперссылки
+%fixint,     % включить прямые знаки интегралов
+]{disser}
+
+\usepackage[
+  a4paper, mag=1000,
+  left=2.5cm, right=1cm, top=2cm, bottom=2cm, headsep=0.7cm, footskip=1cm
+]{geometry}
+
+\usepackage[intlimits]{amsmath}
+\usepackage{amssymb,amsfonts}
+
+\usepackage[T2A]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[english,russian]{babel}
+\ifpdf\usepackage{epstopdf}\fi
+\usepackage[autostyle]{csquotes}
+
+% Шрифт Times в тексте как основной
+%\usepackage{tempora}
+% альтернативный пакет из дистрибутива TeX Live
+%\usepackage{cyrtimes}
+
+% Шрифт Times в формулах как основной
+%\usepackage[varg,cmbraces,cmintegrals]{newtxmath}
+% альтернативный пакет
+%\usepackage[subscriptcorrection,nofontinfo]{mtpro2}
+
+% Плавающие рисунки "в оборку".
+\usepackage{wrapfig}
+
+\usepackage[style=gost-numeric,
+  backend=biber,
+  language=auto,
+  hyperref=auto,
+  autolang=other,
+  sorting=none
+]{biblatex}
+
+\addbibresource{thesis.bib}
+
+%\renewcommand{\chaptername}{}
+%\renewcommand{\bibname}{Литература}
+%\renewcommand{\figurename}{Рисунок}
+
+\graphicspath{{fig/}}
+\renewcommand{\thechapterfont}{\normalsize\bfseries} % Номер главы полужирным
+\renewcommand{\prethechapter}{} % Убираем слово "глава"
+%\renewcommand{\postthechapter}{.~} % ставим точку и пробел после номер
+%\renewcommand{\appendixfont}{\normalsize\bfseries}
+%\renewcommand{\chapterfont}{\normalsize\bfseries}
+%\renewcommand{\sectionfont}{\normalsize\bfseries}
+%\renewcommand{\subsectionfont}{\normalsize\bfseries}
+%\renewcommand{\subsubsectionfont}{\normalsize\bfseries}
+%\renewcommand{\tocprethechapter}{} % в оглавлении убираем слово "Глава"
+%\renewcommand{\theappendixalign}{\hfill} % выключка вправо для слова "приложение" в приложениии
+%\renewcommand{\theappendix}{\arabic{chapter}} % заменяем нумерацию приложений на цифры
+%\renewcommand{\pretheappendix}{\protect{ПРИЛОЖЕНИЕ}~} % Меняем регистр слова "Приложение"
+%\renewcommand{\tocpretheappendix}{\protect{ПРИЛОЖЕНИЕ}~} % Меняем регистр слова "Приложение"
+\renewcommand{\introname}{ВВЕДЕНИЕ}
+%\renewcommand{\sectionindent}{1cm}
+%\renewcommand{\subsectionindent}{1cm}
+%\renewcommand{\aftersection}{6pt plus .1pt}
+%\renewcommand{\aftersubsection}{3pt plus .1pt}
+\renewcommand{\conclusionname}{ЗАКЛЮЧЕНИЕ}
+%\renewcommand{\bibintoc}{Литература}
+
+% Номера страниц снизу и по центру
+%\pagestyle{footcenter}
+%\chapterpagestyle{footcenter}
+
+% Точка с запятой в качестве разделителя между номерами цитирований
+%\setcitestyle{semicolon}
+
+% Использовать полужирное начертание для векторов
+\let\vec=\mathbf
+
+% Включать подсекции в оглавление
+\setcounter{tocdepth}{2}
+
+\graphicspath{{fig/}}
+
+\begin{document}
+
+% Переопределение стандартных заголовков
+\def\contentsname{Содержание}
+%\def\conclusionname{Выводы}
+%\def\bibname{Литература}
+
+%
+% Титульный лист на русском языке
+%
+
+% Название организации
+\institution{~\\ МИНИСТЕРСТВО ОБРАЗОВАНИЯ И НАУКИ РОССИЙСКОЙ ФЕДЕРАЦИИ\\ «Нижегородский государственный университет
+	им. Н.\,И.\,Лобачевского» \\
+	Радиофизический факультет \\
+	Кафедра электродинамики \\ 
+	Направление «Радиофизика»}
+% Имя лица, допускающего к защите (зав. кафедрой)
+
+
+% Имя лица, допускающего к защите (зав. кафедрой)
+%\apname{ФИО зав. кафедрой}
+
+\title{ВЫПУСКНАЯ  КВАЛИФИКАЦИОННАЯ  РАБОТА}
+
+\topic{<<ИССЛЕДОВАНИЕ ОСОБЕННОСТЕЙ РАССЕЯНИЯ ЭЛЕКТРОМАГНИТНЫХ ВОЛН НА ФРАКТАЛЬНЫХ ОБЪЕКТАХ>>}
+
+% Автор
+%\author{ФИО автора}
+% Группа
+%\group{Студента группы}
+
+% Научный руководитель
+\sa      {ФИО руководителя}
+\sastatus{д.~ф.-м.~н., ст.~н.~с.}
+
+% Рецензент
+\rev      {П.\,П.~Петров}
+\revstatus{к.\,ф.-м.\,н., доцент}
+
+% Город и год
+\city{Нижний Новгород}
+\date{\number\year}
+
+\maketitle
+
+%%
+%% Titlepage in English
+%%
+%
+%\setlength\thirdskip{0pt}
+%
+%\institution{Name of Organization}
+%
+%% Approved by
+%\apname{Professor S.\,S.~Sidorov}
+%
+%\title{Diploma Thesis}
+%
+%% Topic
+%\topic{Dummy Title}
+%
+%% Author
+%\author{Author's Name} % Full Name
+%\group{} % Study Group
+%
+%% Scientific Advisor
+%\sa       {I.\,I.~Ivanov}
+%\sastatus {Professor}
+%
+%% Reviewer
+%\rev      {P.\,P.~Petrov}
+%\revstatus{Associate Professor}
+%
+%% Consultant
+%\con{}
+%\conspec{}
+%\constatus{}
+%
+%% City & Year
+%\city{Saint Petersburg}
+%\date{\number\year}
+%
+%\maketitle[en]
+
+% Содержание
+\tableofcontents
+
+% Введение
+\input{intro}
+\clearpage
+
+% Глава 1
+\input{1}
+% Глава 2
+%\input{2}
+
+% Заключение
+\input{concl}
+
+% Список литературы
+\printbibliography[heading=bibintoc]
+\begin{thebibliography}{99}	
+	\bibitem{b4} Torres J.\,P., Torner L.  Twisted photons. Singapore: Wiley,  2011. 288 p.
+	
+	\bibitem{b2}  Wang J., Yang J.-Y., Fazal I.\,M., et al. // Nat. Photon. 2012. {V.~6}, No.~7. P.\,488--496. doi:10.1038/nphoton.2012.138
+	
+	\bibitem{b3} Hiesmayr B.\,C., de Dood M.\,J.\,A., Loffler W. // Phys. Rev. Let. 2016. V.~116, No.~7. Art.~no.~073601. doi:10.1103/PhysRevLett.116.073601
+	
+	\bibitem{b10} Hu L.-X., Yu T.-P., Lu Y., et al. // Plasma Phys. Control. Fusion. 2018. {V. 61}, No.~2. Art.~no.~025009. doi:10.1088/1361-6587/aaefb6
+	
+	\bibitem{b11} Baumann C., Pukhov A. // Phys. Plasmas. 2018. V. 25, No.~8. Art.~no.~083114. doi:10.1063/1.5044617
+	
+	\bibitem{Gusynin2007}
+	Gusynin V.\,P., Sharapov S.\,G., Carbotte J.\,P. // J. Phys.: Condens. Matter. 2007. V.~19, No.~2. Art.~no.~026222. doi:10.1088/0953-8984/19/2/026222
+	
+	\bibitem{Kondratev1999} Kondrat'ev I.\,G., Kudrin A.\,V., Zaboronkova T.\,M. Electrodynamics of density ducts in magnetized plasmas. Amsterdam: Gordon and Breach, 1999. 288 p.
+	
+	\bibitem{b6}
+	Вайнштейн Л.\,А. {Электромагнитные волны}. Москва: Радио и связь, 1988. 440 c.
+	
+	%\bibitem{Shevchenko1971} Shevchenko V.~V. {Continuous Transitions in Open Waveguides}. Boulder: Golem Press,  1971. 176 p.
+	\bibitem{Shevchenko1971} Шевченко В.~B. Плавные переходы в открытых волноводах. Москва: Наука,
+	1969. 192 с.
+	
+	\bibitem{Eskin2017} Es'kin V.\,A., Kudrin A.\,V. // Proc. PIERS 2017. 2017. P.~843. doi:10.1109/PIERS.2017.8261860
+	
+\end{thebibliography}
+
+% Приложения
+%\appendix
+%\input{a}
+
+\end{document}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+%
+%
+%\documentclass[bachelor,subf,12pt,notitlepage]{disser}
+%
+%%\usepackage{pscyr}
+%\usepackage[
+%a4paper, mag=1000, includefoot,
+%left=3cm, right=1cm, top=2cm, bottom=1.5cm, headsep=1cm, footskip=1cm
+%]{geometry}
+%
+%\usepackage[T2A]{fontenc}
+%\usepackage[cp1251]{inputenc}
+%\usepackage[english,russian]{babel}
+%\usepackage{multirow}
+%\usepackage{longtable}
+%
+%\ifpdf\usepackage[pdftex]{graphicx}\else\usepackage{graphicx}\fi
+%
+%\usepackage{comment}
+%
+%\ifpdf\usepackage{epstopdf}\usepackage{pdfpages}\fi
+%
+%\graphicspath{{fig/}}
+%\renewcommand{\thechapterfont}{\normalsize\bfseries} % Номер главы полужирным
+%\renewcommand{\prethechapter}{} % Убираем слово "глава"
+%\renewcommand{\postthechapter}{.~} % ставим точку и пробел после номер
+%\renewcommand{\appendixfont}{\normalsize\bfseries}
+%\renewcommand{\chapterfont}{\normalsize\bfseries}
+%\renewcommand{\sectionfont}{\normalsize\bfseries}
+%\renewcommand{\subsectionfont}{\normalsize\bfseries}
+%\renewcommand{\subsubsectionfont}{\normalsize\bfseries}
+%\renewcommand{\tocprethechapter}{} % в оглавлении убираем слово "Глава"
+%\renewcommand{\theappendixalign}{\hfill} % выключка вправо для слова "приложение" в приложениии
+%\renewcommand{\theappendix}{\arabic{chapter}} % заменяем нумерацию приложений на цифры
+%\renewcommand{\pretheappendix}{\protect{ПРИЛОЖЕНИЕ}~} % Меняем регистр слова "Приложение"
+%\renewcommand{\tocpretheappendix}{\protect{ПРИЛОЖЕНИЕ}~} % Меняем регистр слова "Приложение"
+%\renewcommand{\introname}{ВВЕДЕНИЕ}
+%\renewcommand{\sectionindent}{1cm}
+%\renewcommand{\subsectionindent}{1cm}
+%\renewcommand{\aftersection}{6pt plus .1pt}
+%\renewcommand{\aftersubsection}{3pt plus .1pt}
+%\renewcommand{\conclusionname}{ЗАКЛЮЧЕНИЕ}
+%\renewcommand{\bibname}{БИБЛИОГРАФИЧЕСКИЙ СПИСОК}
+%
+%\setcounter{tocdepth}{2}
+%
+%\begin{document}
+%	
+%	\setcounter{page}{2}
+%	\renewcommand{\contentsname}{ОГЛАВЛЕНИЕ}
+%	
+%	% ----------------------------------------------------------------
+%	\tableofcontents
+%	% ----------------------------------------------------------------
+%	
+%	\addcontentsline{toc}{section}{Введение}
+%	\section*{Введение}
+%	\indent
+%	
+%	
+%	\section{Постановка задачи и основные соотношения}
+%	
+%	\section{Результаты численных расчётов}
+%	
+%	
+%	\newpage
+%	\addcontentsline{toc}{section}{Заключение}
+%	\section*{Заключение}
+%	\indent
+%	% ----------------------------------------------------------------
+%	
+%	
+%	\renewcommand{\bibname}{БИБЛИОГРАФИЧЕСКИЙ СПИСОК}
+%	\bibliography{thesis}
+%	\bibliographystyle{gost705}
+%\end{document}
