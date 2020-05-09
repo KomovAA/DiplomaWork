@@ -33,7 +33,7 @@ meshS ThHex;
 real volumetet;  // use in tetg.
 
 //real step = 0.2/radiusOfInnerSpher;
-real step = lambda / 10.;
+real step = lambda / 20.;
 //cout << "step = "<< step << endl;
 
 real volumetetIn = (step^3)/6.;  
@@ -70,9 +70,9 @@ meshS ThS =  ThInnerSphere + ThInnerSphere2 + ThInnerSphere3 + ThInnerSphere4 + 
 
 
 ////////////////// second iteration //////////////////////////////////////////////////////////
-meshS ThInnerSphere21 = Sphere(radiusOfInnerSpher/4, step/2, 17, -1);
-meshS ThInnerSphere22 = Sphere(radiusOfInnerSpher/4, step/2, 18, -1);
-meshS ThInnerSphere23 = Sphere(radiusOfInnerSpher/4, step/2, 19, -1);
+meshS ThInnerSphere21 = Sphere(radiusOfInnerSpher/4, step/4, 17, -1);
+meshS ThInnerSphere22 = Sphere(radiusOfInnerSpher/4, step/4, 18, -1);
+meshS ThInnerSphere23 = Sphere(radiusOfInnerSpher/4, step/4, 19, -1);
 real ddy = radiusOfInnerSpher/2. + radiusOfInnerSpher/4.;
 ThInnerSphere21 = movemeshS(ThInnerSphere21,transfo=[x + ddx,y + ddy,z]);
 ThInnerSphere22 = movemeshS(ThInnerSphere23,transfo=[x + ddx + ddy,y,z]);
@@ -81,9 +81,9 @@ ThInnerSphere23 = movemeshS(ThInnerSphere23,transfo=[x + ddx,y - ddy,z]);
 ThS =  ThS + ThInnerSphere21 + ThInnerSphere23 + ThInnerSphere22;
 
 
-meshS ThInnerSphere31 = Sphere(radiusOfInnerSpher/4, step/2, 20, -1);
-meshS ThInnerSphere32 = Sphere(radiusOfInnerSpher/4, step/2, 21, -1);
-meshS ThInnerSphere33 = Sphere(radiusOfInnerSpher/4, step/2, 22, -1);
+meshS ThInnerSphere31 = Sphere(radiusOfInnerSpher/4, step/4, 20, -1);
+meshS ThInnerSphere32 = Sphere(radiusOfInnerSpher/4, step/4, 21, -1);
+meshS ThInnerSphere33 = Sphere(radiusOfInnerSpher/4, step/4, 22, -1);
 ThInnerSphere31 = movemeshS(ThInnerSphere31,transfo=[x - ddx,y + ddy,z]);
 ThInnerSphere32 = movemeshS(ThInnerSphere33,transfo=[x - ddx - ddy,y,z]);
 ThInnerSphere33 = movemeshS(ThInnerSphere33,transfo=[x - ddx,y - ddy,z]);
@@ -92,9 +92,9 @@ ThS =  ThS + ThInnerSphere31 + ThInnerSphere33 + ThInnerSphere32;
 
 
 
-meshS ThInnerSphere41 = Sphere(radiusOfInnerSpher/4, step/2, 23, -1);
-meshS ThInnerSphere42 = Sphere(radiusOfInnerSpher/4, step/2, 24, -1);
-meshS ThInnerSphere43 = Sphere(radiusOfInnerSpher/4, step/2, 25, -1);
+meshS ThInnerSphere41 = Sphere(radiusOfInnerSpher/4, step/4, 23, -1);
+meshS ThInnerSphere42 = Sphere(radiusOfInnerSpher/4, step/4, 24, -1);
+meshS ThInnerSphere43 = Sphere(radiusOfInnerSpher/4, step/4, 25, -1);
 ThInnerSphere41 = movemeshS(ThInnerSphere41,transfo=[x,y + ddx + ddy,z]);
 ThInnerSphere42 = movemeshS(ThInnerSphere43,transfo=[x + ddy,y + ddx,z]);
 ThInnerSphere43 = movemeshS(ThInnerSphere43,transfo=[x - ddy,y + ddx,z]);
@@ -104,9 +104,9 @@ ThS =  ThS + ThInnerSphere41 + ThInnerSphere43 + ThInnerSphere42;
 
 
 
-meshS ThInnerSphere51 = Sphere(radiusOfInnerSpher/4, step/2, 26, -1);
-meshS ThInnerSphere52 = Sphere(radiusOfInnerSpher/4, step/2, 27, -1);
-meshS ThInnerSphere53 = Sphere(radiusOfInnerSpher/4, step/2, 28, -1);
+meshS ThInnerSphere51 = Sphere(radiusOfInnerSpher/4, step/4, 26, -1);
+meshS ThInnerSphere52 = Sphere(radiusOfInnerSpher/4, step/4, 27, -1);
+meshS ThInnerSphere53 = Sphere(radiusOfInnerSpher/4, step/4, 28, -1);
 ThInnerSphere51 = movemeshS(ThInnerSphere51,transfo=[x,y - ddx - ddy,z]);
 ThInnerSphere52 = movemeshS(ThInnerSphere53,transfo=[x + ddy,y - ddx,z]);
 ThInnerSphere53 = movemeshS(ThInnerSphere53,transfo=[x - ddy,y - ddx,z]);
@@ -128,13 +128,14 @@ meshS ThVirtualSphere; //
 real radiusOfVirtualSphere = 3.* lambda;
 ThVirtualSphere = Sphere(radiusOfVirtualSphere, step, 123, -1);
 ThS =  ThS + ThOuterSphere + ThVirtualSphere;
+medit("3td iteration",ThS,wait=1);
 /////////////////////////////////////////////////////////////////////////////
 
 real[int] domaine  = [0,0,radiusOfOuterSphere-0.1,1,volumetet,0.,0,0.,2,volumetetIn,0.,0,radiusOfVirtualSphere-0.1,3,volumetet,ddx,0,0.,4,volumetetIn,-ddx,0,0,5,volumetetIn,0,ddx,0,6,volumetetIn,0,-ddx,0,7,volumetetIn, ddx,ddy,0,8,volumetetIn,ddx,-ddy,0.,9,volumetetIn,ddx+ddy,0,0.,10,volumetetIn,-ddx,ddy,0,11,volumetetIn,-ddx,-ddy,0,12,volumetetIn,-ddx-ddy,0,0,13,volumetetIn, 0,ddx+ddy,0,14,volumetetIn, -ddy,ddx,0,15,volumetetIn, ddy,ddx,0,16,volumetetIn, 0, -ddx-ddy,0,17,volumetetIn, ddy,-ddx,0,18,volumetetIn, -ddy, -ddx,0,19,volumetetIn];
 //
 mesh3 Th = tetg(ThS,switch="pqaAAYYQ",nbofregions=19,regionlist=domaine);
 // Tetrahelize the interior of the cube with tetgen
-medit("1st iteration",Th,wait=1);
+medit("3td iteration",Th,wait=1);
 
 fespace Ph(Th,P03d);
 fespace Vh(Th,P1);
