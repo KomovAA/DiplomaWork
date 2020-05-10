@@ -23,6 +23,7 @@ addpath('ffmatlib');
 vh=ffreaddata('diffractionSInS3d_vh.txt');
 Ey=ffreaddata('diffractionSInS3d_Ey.txt');
 Ex=ffreaddata('diffractionSInS3d_Ex.txt');
+SigmD = ffreaddata('diffractionSInS3d_SigmaD.txt');
 
 % S1=[-0 0.375 -0.5; ...
 %     0.375 0 -0.5];
@@ -46,6 +47,7 @@ S3=[ boundOut 0         -2*boundOut; ...
 figure(33);
 ffpdeplot3D(p,b,t,'VhSeq',vh,'XYZData',real(Ex),'Slice',S1,S2,S3,'SGridParam',[80,80],'BDLabels',[30,31], ...
             'XYZStyle','monochrome','ColorMap',jet(200),'ColorBar','on','BoundingBox','on');
+xlabel('x');ylabel('y');zlabel('z');
 
 
 S1=[-boundOut -boundOut 0];
@@ -54,6 +56,8 @@ S3=[ boundOut -boundOut 0];
 figure(35);
 ffpdeplot3D(p,b,t,'VhSeq',vh,'XYZData',real(Ex),'Slice',S1,S2,S3,'Project2D', 'on', ...
             'Boundary','off','ColorMap',jet(200),'ColorBar','on');
+        
+xlabel('x');ylabel('y');zlabel('z');
 %         
 %         
 % S1=[-1.5 -1.5 0];
@@ -62,6 +66,12 @@ ffpdeplot3D(p,b,t,'VhSeq',vh,'XYZData',real(Ex),'Slice',S1,S2,S3,'Project2D', 'o
 % figure(36);
 % ffpdeplot3D(p,b,t,'VhSeq',vh,'XYZData',real(Ey),'Slice',S1,S2,S3,'SGridParam',[50,50], 'Project2D', 'on', ...
 %             'Boundary','off','ColorMap',jet(200),'ColorBar','on');
+
+figure(37);
+ffpdeplot3D(p,b,t,'VhSeq',vh,'XYZData',real(Ex));
+xlabel('x');ylabel('y');zlabel('z');
+
+Power_pattern
 
         
         
