@@ -483,12 +483,31 @@ GoldWavelengthNK =...
     %%%%% form the string for the matrix in freefem++
     strToMatrix = '['
     for i1 = 1:size(testGoldWavelengthNK,1)
-        strToMatrix = append(strToMatrix,'[')
+        strToMatrix = append(strToMatrix,'[');
         for i2 = 1:size(testGoldWavelengthNK,2)-1
-            strToMatrix = append(strToMatrix,num2str(testGoldWavelengthNK(i1,i2)))
+            strToMatrix = append(strToMatrix,num2str(testGoldWavelengthNK(i1,i2)));
             strToMatrix = append(strToMatrix,',');
         end
         strToMatrix = append(strToMatrix,num2str(testGoldWavelengthNK(i1,end)));
+        strToMatrix = append(strToMatrix,'],');
+    end
+    strToMatrix = strToMatrix(1:end-1);
+    strToMatrix = append(strToMatrix,']')
+    
+    
+    
+    
+     sortGoldWavelengthNK = GoldWavelengthNK(1:4:end,:);
+    
+    %%%%% form the string for the matrix in freefem++
+    strToMatrix = '['
+    for i1 = 1:size(sortGoldWavelengthNK,1)
+        strToMatrix = append(strToMatrix,'[');
+        for i2 = 1:size(sortGoldWavelengthNK,2)-1
+            strToMatrix = append(strToMatrix,num2str(sortGoldWavelengthNK(i1,i2)));
+            strToMatrix = append(strToMatrix,',');
+        end
+        strToMatrix = append(strToMatrix,num2str(sortGoldWavelengthNK(i1,end)));
         strToMatrix = append(strToMatrix,'],');
     end
     strToMatrix = strToMatrix(1:end-1);
