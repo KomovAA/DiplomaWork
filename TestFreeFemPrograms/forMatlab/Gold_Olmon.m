@@ -460,39 +460,39 @@ GoldWavelengthNK =...
     
     
     
- testGoldWavelengthNK =...
-       [3.000E-01 1.562E+00 1.827E+00
-        4.000E-01 1.554E+00 1.869E+00
-        5.000E-01 8.181E-01 1.745E+00
-        6.000E-01 2.184E-01 3.026E+00
-        7.000E-01 1.380E-01 4.002E+00
-        8.000E-01 1.238E-01 4.859E+00
-        9.000E-01 1.309E-01 5.660E+00
-        1.000E+00 1.472E-01 6.428E+00
-        2.000E+00 5.294E-01 1.295E+01
-        3.001E+00 1.168E+00 1.945E+01
-        4.001E+00 2.025E+00 2.579E+01
-        5.024E+00 3.098E+00 3.212E+01
-        6.057E+00 4.346E+00 3.831E+01
-        7.045E+00 5.658E+00 4.404E+01
-        8.001E+00 7.008E+00 4.942E+01
-        9.002E+00 8.475E+00 5.486E+01
-        1.013E+01 1.016E+01 6.076E+01
-        2.493E+01 2.787E+01 1.258E+02];
-    
-    %%%%% form the string for the matrix in freefem++
-    strToMatrix = '['
-    for i1 = 1:size(testGoldWavelengthNK,1)
-        strToMatrix = append(strToMatrix,'[');
-        for i2 = 1:size(testGoldWavelengthNK,2)-1
-            strToMatrix = append(strToMatrix,num2str(testGoldWavelengthNK(i1,i2)));
-            strToMatrix = append(strToMatrix,',');
-        end
-        strToMatrix = append(strToMatrix,num2str(testGoldWavelengthNK(i1,end)));
-        strToMatrix = append(strToMatrix,'],');
-    end
-    strToMatrix = strToMatrix(1:end-1);
-    strToMatrix = append(strToMatrix,']')
+%  testGoldWavelengthNK =...
+%        [3.000E-01 1.562E+00 1.827E+00
+%         4.000E-01 1.554E+00 1.869E+00
+%         5.000E-01 8.181E-01 1.745E+00
+%         6.000E-01 2.184E-01 3.026E+00
+%         7.000E-01 1.380E-01 4.002E+00
+%         8.000E-01 1.238E-01 4.859E+00
+%         9.000E-01 1.309E-01 5.660E+00
+%         1.000E+00 1.472E-01 6.428E+00
+%         2.000E+00 5.294E-01 1.295E+01
+%         3.001E+00 1.168E+00 1.945E+01
+%         4.001E+00 2.025E+00 2.579E+01
+%         5.024E+00 3.098E+00 3.212E+01
+%         6.057E+00 4.346E+00 3.831E+01
+%         7.045E+00 5.658E+00 4.404E+01
+%         8.001E+00 7.008E+00 4.942E+01
+%         9.002E+00 8.475E+00 5.486E+01
+%         1.013E+01 1.016E+01 6.076E+01
+%         2.493E+01 2.787E+01 1.258E+02];
+%     
+%     %%%%% form the string for the matrix in freefem++
+%     strToMatrix = '['
+%     for i1 = 1:size(testGoldWavelengthNK,1);
+%         strToMatrix = append(strToMatrix,'[');
+%         for i2 = 1:size(testGoldWavelengthNK,2)-1
+%             strToMatrix = append(strToMatrix,num2str(testGoldWavelengthNK(i1,i2)));
+%             strToMatrix = append(strToMatrix,',');
+%         end
+%         strToMatrix = append(strToMatrix,num2str(testGoldWavelengthNK(i1,end)));
+%         strToMatrix = append(strToMatrix,'],');
+%     end
+%     strToMatrix = strToMatrix(1:end-1);
+%     strToMatrix = append(strToMatrix,']');
     
     
     
@@ -500,7 +500,7 @@ GoldWavelengthNK =...
      sortGoldWavelengthNK = GoldWavelengthNK(1:4:end,:);
     
     %%%%% form the string for the matrix in freefem++
-    strToMatrix = '['
+    strToMatrix = '[';
     for i1 = 1:size(sortGoldWavelengthNK,1)
         strToMatrix = append(strToMatrix,'[');
         for i2 = 1:size(sortGoldWavelengthNK,2)-1
@@ -511,4 +511,4 @@ GoldWavelengthNK =...
         strToMatrix = append(strToMatrix,'],');
     end
     strToMatrix = strToMatrix(1:end-1);
-    strToMatrix = append(strToMatrix,']')
+    strToMatrix = append(strToMatrix,']');
