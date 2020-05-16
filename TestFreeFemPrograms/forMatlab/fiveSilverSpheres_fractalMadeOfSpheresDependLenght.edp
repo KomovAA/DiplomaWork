@@ -1,0 +1,280 @@
+verbosity=1;
+load "msh3"
+load "tetgen"
+load "medit"
+include "MeshSurface.idp"
+
+include "ffmatlib.idp"
+
+
+
+
+real c0 = 299792458;        // speed of light in vacuum
+real mue0 = 4.*pi*1e-7;     // Permeability of free space
+real eps0 = 1./c0^2/mue0;   // Permittivity of free space
+real Z0 = sqrt(mue0/eps0);  // Impedance of free space
+
+real    lambda0 = 10e-6;        // vacuum wavelength (in m)
+complex ns    = 10.- 1i*70.;   // sphere refractive index (complex)
+ns = 2.;
+// ns = 1.; // test - uniform media
+///// silver media
+ matrix<real> sortSilverWavelengthNK = [[0.27,1.364,1.318],[0.31,1.373,0.5192],[0.35,0.08443,1.341],[0.3899,0.06035,1.971],[0.4299,0.05411,2.413],[0.4699,0.05198,2.795],[0.5099,0.05193,3.148],[0.5499,0.05326,3.484],[0.5899,0.0556,3.809],[0.6299,0.05876,4.126],[0.6699,0.06262,4.438],[0.7099,0.06708,4.746],[0.7499,0.0721,5.051],[0.7899,0.07762,5.353],[0.8299,0.08362,5.653],[0.8699,0.09007,5.951],[0.9099,0.09694,6.248],[0.9499,0.1042,6.544],[0.9899,0.1119,6.838],[1.03,0.12,7.132],[1.07,0.1285,7.425],[1.11,0.1373,7.718],[1.15,0.1465,8.009],[1.19,0.1561,8.3],[1.23,0.166,8.591],[1.268,0.1759,8.869],[1.288,0.1812,9.015],[1.309,0.1868,9.166],[1.328,0.1919,9.302],[1.347,0.1973,9.442],[1.379,0.2062,9.67],[1.418,0.2176,9.953],[1.44,0.224,10.11],[1.46,0.2301,10.26],[1.48,0.2362,10.4],[1.5,0.2424,10.54],[1.52,0.2487,10.69],[1.54,0.255,10.83],[1.56,0.2615,10.98],[1.58,0.268,11.12],[1.6,0.2747,11.26],[1.62,0.2814,11.41],[1.64,0.2882,11.55],[1.66,0.2951,11.69],[1.68,0.302,11.84],[1.7,0.3091,11.98],[1.72,0.3162,12.13],[1.74,0.3235,12.27],[1.76,0.3308,12.41],[1.78,0.3382,12.56],[1.8,0.3457,12.7],[1.82,0.3532,12.84],[1.84,0.3609,12.99],[1.86,0.3686,13.13],[1.88,0.3764,13.27],[1.9,0.3843,13.42],[1.92,0.3923,13.56],[1.94,0.4004,13.7],[1.96,0.4086,13.84],[1.98,0.4168,13.99],[2,0.4251,14.13],[2.038,0.4412,14.4],[2.077,0.4581,14.68],[2.118,0.476,14.97],[2.153,0.4917,15.23],[2.197,0.5116,15.54],[2.235,0.5292,15.81],[2.274,0.5477,16.09],[2.314,0.5672,16.38],[2.356,0.5877,16.68],[2.391,0.605,16.92],[2.436,0.6277,17.24],[2.473,0.6468,17.51],[2.512,0.6668,17.78],[2.551,0.6878,18.06],[2.592,0.7097,18.35],[2.634,0.7327,18.65],[2.678,0.7569,18.96],[2.723,0.7823,19.28],[2.769,0.809,19.61],[2.817,0.8371,19.96],[2.867,0.8667,20.31],[2.919,0.8979,20.68],[2.973,0.9309,21.06],[3.028,0.9657,21.45],[3.086,1.003,21.86],[3.146,1.041,22.28],[3.208,1.083,22.72],[3.273,1.126,23.18],[3.34,1.173,23.66],[3.411,1.222,24.16],[3.484,1.275,24.67],[3.561,1.331,25.21],[3.641,1.391,25.78],[3.724,1.455,26.37],[3.812,1.524,26.98],[3.904,1.597,27.63],[4,1.676,28.31],[4.101,1.761,29.02],[4.208,1.853,29.77],[4.32,1.951,30.56],[4.439,2.059,31.38],[4.564,2.175,32.26],[4.696,2.301,33.18],[4.836,2.438,34.16],[4.985,2.588,35.2],[5.143,2.753,36.3],[5.312,2.933,37.47],[5.492,3.132,38.72],[5.684,3.351,40.05],[5.891,3.595,41.48],[6.114,3.865,43.01],[6.353,4.168,44.66],[6.612,4.507,46.44],[6.894,4.888,48.36],[7.2,5.32,50.44],[7.535,5.811,52.71],[7.903,6.373,55.18],[8.308,7.019,57.9],[8.757,7.767,60.89],[9.257,8.639,64.19],[9.819,9.665,67.87],[10.45,10.88,71.97],[11.17,12.34,76.58],[12,14.1,81.8],[12.96,16.25,87.74],[14.09,18.93,94.57],[15.43,22.29,102.5],[17.05,26.59,111.7],[19.06,32.2,122.6],[21.6,39.65,135.6],[24.92,49.79,151.4]];
+
+real lambda = 1.;        // vacuum wavelength (in 10*1e-6 m)
+real radiusOfInnerSpher = lambda / 10.;
+
+real k0 = 2.* pi / lambda;
+complex k2 = k0 * ns;
+real w = c0 * 2.* pi / lambda0;
+real alpha=1; 	//penalty term
+
+ 
+// 
+meshS ThHex;
+real volumetet;  // use in tetg.
+
+//real step = 0.2/radiusOfInnerSpher;
+real step = lambda / 20.;
+//cout << "step = "<< step << endl;
+
+real volumetetIn = (step^3)/6.;  
+//step = lambda / 2;
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////// creating an inner spheres ///////////////////////////////////////
+////// zero iteration
+meshS ThInnerSphere; //
+ThInnerSphere = Sphere(radiusOfInnerSpher,    step,   11, -1);
+//medit("Scatterer", ThInnerSphere,wait=1);
+
+
+/////////////////////////// first iteration ///////////////////////////////////////////////////
+
+meshS ThInnerSphere2 = Sphere(radiusOfInnerSpher/2, step/2, 13, -1);
+real ddx = radiusOfInnerSpher + radiusOfInnerSpher/2;
+ThInnerSphere2 = movemeshS(ThInnerSphere2,transfo=[x + ddx,y,z]);
+meshS ThInnerSphere3 = Sphere(radiusOfInnerSpher/2, step/2, 14, -1);
+ThInnerSphere3 = movemeshS(ThInnerSphere3,transfo=[x - ddx,y,z]);
+
+meshS ThInnerSphere4 = Sphere(radiusOfInnerSpher/2, step/2, 15, -1);
+ThInnerSphere4 = movemeshS(ThInnerSphere4,transfo=[x,y + ddx,z]);
+meshS ThInnerSphere5 = Sphere(radiusOfInnerSpher/2, step/2, 16, -1);
+ThInnerSphere5 = movemeshS(ThInnerSphere5,transfo=[x,y - ddx,z]);
+//medit("Bounday mesh",ThInnerSphere,wait=1);
+
+meshS ThS =  ThInnerSphere + ThInnerSphere2 + ThInnerSphere3 + ThInnerSphere4 + ThInnerSphere5;
+medit("Scatterer",ThS,wait=1);
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////// creating an outer sphere ///////////////////////////////////////
+step = lambda / 2.;
+volumetet = (step^3)/6.;  
+meshS ThOuterSphere; // 
+real radiusOfOuterSphere = 4.* lambda;
+ThOuterSphere = Sphere(radiusOfOuterSphere, step,12,1);
+
+meshS ThVirtualSphere; // 
+real radiusOfVirtualSphere = 3.* lambda;
+ThVirtualSphere = Sphere(radiusOfVirtualSphere, step, 123, -1);
+
+// =  ThOuterSphere + ThInnerSphere;
+//medit("Bounday mesh",ThS,wait=1);
+
+
+//real[int] domaine = [0,0,0,1,volumetet,0.,0,0.,2,volumetet];
+//mesh3 Th = tetg(ThS,switch="pqaAAYYQ",nbofregions=2,regionlist=domaine);
+// Tetrahelize the interior of the cube with tetgen
+//medit("1st iteration",Th,wait=1);
+
+
+/////////////////////////////////////////////////////////////////////////////
+ThS =  ThS + ThOuterSphere + ThVirtualSphere;
+//medit("Bounday mesh",ThS,wait=1);
+
+real[int] domaine  = [0,0,radiusOfOuterSphere-0.1,1,volumetet,0.,0,0.,2,volumetetIn,0.,0,radiusOfVirtualSphere-0.1,3,volumetet,ddx,0,0.,4,volumetetIn,-ddx,0,0,5,volumetetIn,0,ddx,0,6,volumetetIn,0,-ddx,0,7,volumetetIn];
+mesh3 Th = tetg(ThS,switch="pqaAAYYQ",nbofregions=7,regionlist=domaine);
+// Tetrahelize the interior of the cube with tetgen
+medit("1st iteration",Th,wait=1);
+
+fespace Ph(Th,P03d);
+fespace Vh(Th,P1);
+Ph reg = region;           // function that returns region number of a point XY
+Ph inReg  = sqrt(x^2.+y^2. + z^2.) < radiusOfInnerSpher;  //subdomains for inside the sratterer
+Ph outReg = sqrt(x^2.+y^2. + z^2.) > radiusOfInnerSpher;  //subdomains for outside the scatterer
+Vh dd = inReg;
+
+//plot(dd,wait=1,value=1);
+
+cout << "  centre = " << reg(0,0,0) << endl;
+cout << " virtual = " << reg(0,0,radiusOfVirtualSphere-0.1) << endl;
+cout << " exterieur = " << reg(0,0,radiusOfOuterSphere-0.1) << endl;
+
+macro Grad(u) [dx(u),dy(u),dz(u)] // EOM
+macro Curl(ux, uy, uz)[dy(uz)-dz(uy), dz(ux)-dx(uz), dx(uy)-dy(ux)]// EOM
+macro Div(ux, uy, uz)[dx(ux) + dy(uy) + dz(uz)]// EOM
+macro CrossN(ux, uy, uz)[uy*N.z-uz*N.y, uz*N.x-ux*N.z, ux*N.y-uy*N.x]// EOM
+macro Curlabs(ux, uy, uz)[abs(dy(uz)-dz(uy)), abs(dz(ux)-dx(uz)), abs(dx(uy)-dy(ux))]// EOM
+
+
+real t = 0.;
+
+Vh<complex> Hz, hz;
+Vh<complex> Ex1 = exp(- 1i* k0 * z);
+Vh <complex> Ez,ez,Ey,ey,Ex,ex,Hy,Sx,Sy,Sz,Sr,Hx,Si,SigmD;
+Vh <complex> N0;
+
+
+  func complex Eps() {
+    if (Th(x,y,z).region == Th(0.0,0.0,0.0).region || Th(x,y,z).region == Th(ddx,0.0,0.0).region || Th(x,y,z).region == Th(-ddx,0.0,0.0).region || Th(x,y,z).region == Th(0.0, ddx, 0.0).region || Th(x,y,z).region == Th(0.0,-ddx,0.0).region) 
+        return ns^2;
+    else 
+        return 1.0;
+}
+
+func real InInner() {
+    if (Th(x,y,z).region == Th(0.0,0.0,0.0).region || Th(x,y,z).region == Th(ddx,0.0,0.0).region || Th(x,y,z).region == Th(-ddx,0.0,0.0).region || Th(x,y,z).region == Th(0.0, ddx, 0.0).region || Th(x,y,z).region == Th(0.0,-ddx,0.0).region) 
+        return 1.;
+    else 
+        return 0.;
+}
+
+//////////////////// calculation of the scattered field /////////////////////  
+problem MaxwellEquationsForH3D([Ex,Ey,Ez],[ex,ey,ez]) =
+          int3d(Th)(Curl(ex,ey,ez)'*Curl(Ex,Ey,Ez))
+        - int3d(Th)(k0^2 * Eps() * [ex,ey,ez]'*[Ex,Ey,Ez])
+		+ int2d(Th,11)( 1i*k0 * ( ez * N.x - ex * N.z) * Ex1)
+		+ int2d(Th,13)( 1i*k0 * ( ez * N.x - ex * N.z) * Ex1)
+		+ int2d(Th,14)( 1i*k0 * ( ez * N.x - ex * N.z) * Ex1)
+		+ int2d(Th,15)( 1i*k0 * ( ez * N.x - ex * N.z) * Ex1)
+		+ int2d(Th,16)( 1i*k0 * ( ez * N.x - ex * N.z) * Ex1)
+		+ int2d(Th,12)(-1i*k0 * ((ex * N.x + ey * N.y + ez * N.z)*(Ex * N.x + Ey * N.y + Ez * N.z) - (Ex * ex + Ey * ey + Ez * ez)))
+  ;
+  
+complex sigmaTotal;
+real sigmaT;
+real R = 3. * lambda;
+Vh Phi = atan(y/x);
+Vh teta = acos(z / sqrt(x^2 + y^2 + z^2));
+complex E = 1.;
+Vh R2 = x^2+y^2+z^2;
+
+Vh <complex> EpsI; // EpsI - epsilon imaginary
+complex sigmaAbsorption;
+
+real[int] sigmaTotalMatrix(sortSilverWavelengthNK.n);
+real[int] sigmaAbsorptionMatrix(sortSilverWavelengthNK.n);
+
+for (int jrow=0; jrow < sortSilverWavelengthNK.n; jrow++)
+{
+	cout << "jrow = " << jrow << endl;
+ns    = sortSilverWavelengthNK(jrow, 1) - 1i*sortSilverWavelengthNK(jrow, 2);
+cout << "n = " << ns << endl;
+
+MaxwellEquationsForH3D;
+
+
+
+
+Hx = 1i/k0 * (dy(Ez)-dz(Ey));
+Hy = 1i/k0 * (dz(Ex)-dx(Ez));
+Hz = 1i/k0 * (dx(Ey)-dy(Ex));
+Sx = 1./2. * (Ey*conj(Hz) - Ez*conj(Hy));
+Sy = 1./2. * (Ez*conj(Hx) - Ex*conj(Hz));
+Sz = 1./2. * (Ex*conj(Hy) - Ey*conj(Hx));
+Sr = Sx * cos(Phi) * sin(teta) + Sy * sin(Phi) * sin (teta) + Sz * cos(teta);
+Si = 1.;
+
+SigmD = R2 * Sr/Si;
+	 
+sigmaTotal = (int2d(Th, 123)(R2 * Sr));
+cout << "sigmaTotal = " << sigmaTotal << endl;
+
+sigmaT = (int2d(Th, 123)(R2 * real(Sr)));
+sigmaTotalMatrix(jrow) = sigmaT;
+cout << "sigmaTotalMatrix = " << sigmaTotalMatrix << endl;
+
+EpsI = 2*real(ns)*imag(ns);
+sigmaAbsorption = (int3d(Th) ( InInner() *(k0 * EpsI * (Ex * conj(Ex)  +   Ey * conj(Ey) +   Ez * conj(Ez)))));
+sigmaAbsorptionMatrix(jrow) = real(sigmaAbsorption);
+cout << "sigmaAbsorptionMatrix = " << sigmaAbsorptionMatrix << endl;		 
+
+
+cout << "k0 = " << k0 << endl;
+}
+
+ofstream file1("sigmaAbsorptionMatrixFiveSilverSpheres.txt");
+file1<<sigmaAbsorptionMatrix;
+ofstream file2("sigmaTotalMatrixFiveSilverSpheres.txt");
+file2<<sigmaTotalMatrix;
+ofstream file3("sortSilverWavelengthNKFiveSilverSpheres.txt");
+file3<<sortSilverWavelengthNK;
+
+
+/*
+MaxwellEquationsForH3D;
+ 
+real R = 3. * lambda;
+Vh Phi = atan(y/x);
+Vh teta = acos(z / sqrt(x^2 + y^2 + z^2));
+complex E = 1.;
+Hx = 1i/k0 * (dy(Ez)-dz(Ey));
+Hy = 1i/k0 * (dz(Ex)-dx(Ez));
+Hz = 1i/k0 * (dx(Ey)-dy(Ex));
+Sx = 1./2. * (Ey*conj(Hz) - Ez*conj(Hy));
+Sy = 1./2. * (Ez*conj(Hx) - Ex*conj(Hz));
+Sz = 1./2. * (Ex*conj(Hy) - Ey*conj(Hx));
+Sr = Sx * cos(Phi) * sin(teta) + Sy * sin(Phi) * sin (teta) + Sz * cos(teta);
+Vh R2 = x^2+y^2+z^2;
+Si = 1.;
+
+SigmD = R2 * Sr/Si;
+	 
+complex sigmaTotal = (int2d(Th, 123)(R2 * Sr));
+cout << "sigmaTotal = " << sigmaTotal << endl;
+
+real sigmaT = (int2d(Th, 123)(R2 * real(Sr)));
+cout << "sigmaT = " << sigmaT << endl;
+
+Vh <complex> EpsI; // EpsI - epsilon imaginary
+
+EpsI = 2*real(ns)*imag(ns);
+
+complex sigmaAbsorption = (int3d(Th) ( InInner() *(k0 * EpsI * (Ex * conj(Ex)  +   Ey * conj(Ey) +   Ez * conj(Ez))))); 
+cout << "sigmaAbsorption = " << sigmaAbsorption << endl;		 
+
+ 
+Vh realHz, realEy, realEx, realEx1;
+Vh<complex> HzInTime = 0.;
+Vh<complex> Ex1InTime = 0.;
+Vh<complex> E0=1.;
+Ex1InTime = Ex + (1. - InInner()) * Ex1;
+realEx1 = real(Ex1InTime);
+
+cout << "k0 = " << k0 << endl;
+
+//Ex1InTime = outReg + 1i *0;
+
+///// save for the matlab
+savemesh(Th,"diffractionSInS3d.mesh");
+ffSaveVh(Th,Vh,"diffractionSInS3d_vh.txt");
+ffSaveData(Ey,"diffractionSInS3d_Ey.txt");
+ffSaveData(Ex1InTime,"diffractionSInS3d_Ex.txt");
+ffSaveData(SigmD,"diffractionSInS3d_SigmaD.txt");
+/////////////////////////
+Ex1InTime = Ex + (1. - InInner()) * Ex1;
+	realEx1 = real(Ex1InTime);
+plot(realEx1,wait=1,value=1);
+
+real dt = 2.* pi/ w / 20;
+for (int i=1; i < 100; i++)
+{
+    t = dt * i;
+    cout<< "Time is" << t << endl;
+
+	Ex1InTime = Ex * exp (1i*(w*t)) + (1. - InInner()) * (Ex1 * exp (1i*(w*t)));
+	realEx1 = real(Ex1InTime);
+	
+	plot(realEx1,wait=0,value=1);
+}*/

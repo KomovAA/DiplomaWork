@@ -1,0 +1,221 @@
+verbosity=1;
+load "msh3"
+load "tetgen"
+load "medit"
+include "MeshSurface.idp"
+
+include "ffmatlib.idp"
+
+
+
+
+real c0 = 299792458;        // speed of light in vacuum
+real mue0 = 4.*pi*1e-7;     // Permeability of free space
+real eps0 = 1./c0^2/mue0;   // Permittivity of free space
+real Z0 = sqrt(mue0/eps0);  // Impedance of free space
+
+real    lambda0 = 10e-6;        // vacuum wavelength (in m)
+complex ns    = 10.- 1i*70.;   // sphere refractive index (complex)
+ns = 2.;
+// ns = 1.; // test - uniform media
+
+///// copper media
+ matrix<real> sortCopperWavelengthNK = [[0.21,1.243,1.376],[0.25,1.567,1.474],[0.29,1.522,1.36],[0.33,1.379,1.511],[0.37,1.297,1.683],[0.41,1.229,1.862],[0.45,1.167,2.042],[0.49,1.11,2.186],[0.53,1.002,2.242],[0.57,0.565,2.382],[0.61,0.317,2.957],[0.65,0.326,3.4],[0.69,0.339,3.757],[0.73,0.354,4.084],[0.77,0.367,4.396],[0.81,0.39,4.699],[0.85,0.416,4.982],[0.89,0.431,5.253],[0.93,0.441,5.522],[0.97,0.445,5.795],[1.0097,0.463,6.128],[1.05,0.464,6.331],[1.09,0.474,6.608],[1.13,0.496,6.87],[1.17,0.503,7.133],[1.21,0.522,7.402],[1.25,0.532,7.662],[1.29,0.553,7.924],[1.3314,0.572,8.179],[1.37,0.589,8.429],[1.41,0.597,8.68],[1.45,0.602,8.938],[1.49,0.618,9.202],[1.53,0.639,9.452],[1.57,0.648,9.71],[1.61,0.669,9.966],[1.65,0.695,10.215],[1.69,0.71,10.454],[1.73,0.718,10.694],[1.77,0.72,10.942],[1.81,0.724,11.191],[1.85,0.727,11.456],[1.89,0.742,11.703],[1.93,0.745,11.962],[1.97,0.754,12.221],[2.01,0.766,12.484],[2.05,0.785,12.745],[2.09,0.802,13.004],[2.13,0.823,13.262],[2.17,0.843,13.518],[2.21,0.863,13.772],[2.25,0.885,14.026],[2.29,0.908,14.28],[2.33,0.93,14.534],[2.37,0.954,14.786],[2.41,0.975,15.035],[2.45,0.998,15.285],[2.49,1.018,15.538],[2.5189,1.038,15.724],[2.5445,1.056,15.884],[2.5707,1.074,16.046],[2.5974,1.091,16.212],[2.6247,1.109,16.381],[2.6525,1.127,16.554],[2.681,1.147,16.73],[2.71,1.167,16.91],[2.7397,1.188,17.092],[2.7701,1.21,17.278],[2.8011,1.232,17.467],[2.8329,1.254,17.658],[2.8653,1.276,17.853],[2.8986,1.299,18.053],[2.9326,1.32,18.256],[2.9674,1.339,18.464],[3.003,1.36,18.677],[3.0395,1.38,18.896],[3.0769,1.4,19.121],[3.1153,1.42,19.353],[3.1546,1.441,19.59],[3.1949,1.462,19.834],[3.2362,1.483,20.085],[3.2787,1.508,20.345],[3.3223,1.531,20.609],[3.367,1.557,20.881],[3.413,1.584,21.161],[3.4602,1.611,21.45],[3.5088,1.642,21.744],[3.5587,1.671,22.049],[3.6101,1.704,22.361],[3.663,1.736,22.684],[3.7175,1.773,23.017],[3.7736,1.81,23.357],[3.8314,1.849,23.71],[3.8911,1.892,24.073],[3.9526,1.936,24.447],[4.0161,1.984,24.836],[4.0816,2.039,25.234],[4.1494,2.092,25.641],[4.2194,2.156,26.061],[4.2918,2.216,26.494],[4.3668,2.287,26.938],[4.4444,2.356,27.393],[4.5249,2.429,27.863],[4.6083,2.505,28.343],[4.6948,2.579,28.836],[4.7847,2.654,29.347],[4.878,2.728,29.876],[4.9751,2.801,30.419],[5.102,2.888,31.137],[5.1813,2.943,31.584],[5.291,3.007,32.203],[5.4054,3.075,32.856],[5.5249,3.145,33.54],[5.6497,3.216,34.26],[5.7803,3.29,35.025],[5.9172,3.377,35.83],[6.0606,3.481,36.679],[6.2112,3.591,37.563],[6.3694,3.715,38.496],[6.5359,3.865,39.472],[6.7114,4.022,40.496],[6.8966,4.198,41.561],[7.0922,4.393,42.68],[7.2993,4.591,43.949],[7.5188,4.804,45.087],[7.7519,5.036,46.379],[8,5.264,47.758],[8.2645,5.52,49.22],[8.547,5.789,50.778],[8.8496,6.083,52.442],[9.1743,6.405,54.22],[9.5238,6.758,56.127],[9.901,7.16,58.161],[10.3093,7.61,60.349],[10.7527,8.113,62.675],[11.236,8.642,65.157],[11.7647,9.217,67.838],[12.3457,9.834,70.732],[12.987,10.455,73.829],[13.6986,11.052,77.262],[14.4928,11.661,81.071],[15.3846,12.268,85.364],[16.3934,12.813,90.192],[17.5439,13.422,95.8],[18.8679,14,102.349],[20.4082,14.609,110.046],[22.2222,15.406,119.378],[24.3902,16.427,130.692]];
+ 
+
+
+
+
+
+real lambda = 1.;        // vacuum wavelength (in 10*1e-6 m)
+real radiusOfInnerSpher = lambda / 10.;
+
+real k0 = 2.* pi / lambda;
+complex k2 = k0 * ns;
+real w = c0 * 2.* pi / lambda0;
+real alpha=1; 	//penalty term
+
+ 
+// 
+meshS ThHex;
+real volumetet;  // use in tetg.
+
+//real step = 0.2/radiusOfInnerSpher;
+real step = lambda / 20.;
+//cout << "step = "<< step << endl;
+
+real volumetetIn = (step^3)/6.;  
+//step = lambda / 2;
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////// creating an inner spheres ///////////////////////////////////////
+////// zero iteration
+meshS ThInnerSphere; //
+ThInnerSphere = Sphere(radiusOfInnerSpher,    step,   11, -1);
+medit("Scatterer", ThInnerSphere,wait=1);
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////// creating an outer sphere ///////////////////////////////////////
+step = lambda / 2.;
+volumetet = (step^3)/6.;  
+meshS ThOuterSphere; // 
+real radiusOfOuterSphere = 4.* lambda;
+ThOuterSphere = Sphere(radiusOfOuterSphere, step,12,1);
+
+meshS ThVirtualSphere; // 
+real radiusOfVirtualSphere = 3.* lambda;
+ThVirtualSphere = Sphere(radiusOfVirtualSphere, step, 123, -1);
+
+meshS ThS =  ThOuterSphere + ThInnerSphere + ThVirtualSphere;
+//meshS ThS =  ThInnerSphere + ThOuterSphere;
+//medit("Bounday mesh",ThS,wait=1);
+
+
+real[int] domaine = [0,0,radiusOfOuterSphere-0.1,1,volumetet,0.,0,0.,2,volumetetIn,0.,0,radiusOfVirtualSphere-0.1,3,volumetet];
+mesh3 Th = tetg(ThS,switch="pqaAAYYQ",nbofregions=3,regionlist=domaine);
+//real[int] domaine = [0,0,radiusOfOuterSphere-0.2,1,volumetet,0.,0,0.,2,volumetetIn];
+//mesh3 Th = tetg(ThS,switch="pqaAAYYQ",nbofregions=2,regionlist=domaine);
+// Tetrahelize the interior of the cube with tetgen
+medit("1st iteration",Th,wait=1);
+
+fespace Ph(Th,P03d);
+fespace Vh(Th,P1);
+Ph reg = region;           // function that returns region number of a point XY
+Ph inReg  = sqrt(x^2.+y^2. + z^2.) < radiusOfInnerSpher;  //subdomains for inside the sratterer
+Ph outReg = sqrt(x^2.+y^2. + z^2.) > radiusOfInnerSpher;  //subdomains for outside the scatterer
+
+cout << "  centre = " << reg(0,0,0) << endl;
+cout << " virtual = " << reg(0,0,radiusOfVirtualSphere-0.1) << endl;
+cout << " exterieur = " << reg(0,0,radiusOfOuterSphere-0.1) << endl;
+
+macro Grad(u) [dx(u),dy(u),dz(u)] // EOM
+macro Curl(ux, uy, uz)[dy(uz)-dz(uy), dz(ux)-dx(uz), dx(uy)-dy(ux)]// EOM
+macro Div(ux, uy, uz)[dx(ux) + dy(uy) + dz(uz)]// EOM
+macro CrossN(ux, uy, uz)[uy*N.z-uz*N.y, uz*N.x-ux*N.z, ux*N.y-uy*N.x]// EOM
+macro Curlabs(ux, uy, uz)[abs(dy(uz)-dz(uy)), abs(dz(ux)-dx(uz)), abs(dx(uy)-dy(ux))]// EOM
+
+
+real t = 0.;
+
+Vh<complex> Hz, hz;
+Vh<complex> Ex1 = exp(- 1i* k0 * z);
+Vh <complex> Ez,ez,Ey,ey,Ex,ex,Hy,Sx,Sy,Sz,Sr,Hx,Si,SigmD;
+Vh <complex> N0;
+
+  
+func complex Eps() {
+    if (Th(x,y,z).region == Th(0.0,0.0,0.0).region) 
+        return ns^2;
+    else 
+        return 1.0;
+}
+
+func real InInner() {
+    if (Th(x,y,z).region == Th(0.0,0.0,0.0).region) 
+        return 1.;
+    else 
+        return 0.;
+}
+
+//////////////////// calculation of the scattered field /////////////////////  
+problem MaxwellEquationsForH3D([Ex,Ey,Ez],[ex,ey,ez]) =
+          int3d(Th)(Curl(ex,ey,ez)'*Curl(Ex,Ey,Ez))
+        - int3d(Th)(k0^2 * Eps() * [ex,ey,ez]'*[Ex,Ey,Ez])
+		+ int2d(Th,11)( 1i*k0 * ( ez * N.x - ex * N.z) * Ex1)
+		+ int2d(Th,12)(-1i*k0 * ((ex * N.x + ey * N.y + ez * N.z)*(Ex * N.x + Ey * N.y + Ez * N.z) - (Ex * ex + Ey * ey + Ez * ez)))
+  ;
+  
+complex sigmaTotal;
+real sigmaT;
+real R = 3. * lambda;
+Vh Phi = atan(y/x);
+Vh teta = acos(z / sqrt(x^2 + y^2 + z^2));
+complex E = 1.;
+Vh R2 = x^2+y^2+z^2;
+
+Vh <complex> EpsI; // EpsI - epsilon imaginary
+complex sigmaAbsorption;
+
+real[int] sigmaTotalMatrix(sortCopperWavelengthNK.n);
+real[int] sigmaAbsorptionMatrix(sortCopperWavelengthNK.n);
+
+for (int jrow=0; jrow < sortCopperWavelengthNK.n; jrow++)
+{
+	cout << "jrow = " << jrow << endl;
+ns    = sortCopperWavelengthNK(jrow, 1) - 1i*sortCopperWavelengthNK(jrow, 2);
+cout << "n = " << ns << endl;
+
+MaxwellEquationsForH3D;
+
+Hx = 1i/k0 * (dy(Ez)-dz(Ey));
+Hy = 1i/k0 * (dz(Ex)-dx(Ez));
+Hz = 1i/k0 * (dx(Ey)-dy(Ex));
+Sx = 1./2. * (Ey*conj(Hz) - Ez*conj(Hy));
+Sy = 1./2. * (Ez*conj(Hx) - Ex*conj(Hz));
+Sz = 1./2. * (Ex*conj(Hy) - Ey*conj(Hx));
+Sr = Sx * cos(Phi) * sin(teta) + Sy * sin(Phi) * sin (teta) + Sz * cos(teta);
+Si = 1.;
+
+SigmD = R2 * Sr/Si;
+	 
+sigmaTotal = (int2d(Th, 123)(R2 * Sr));
+cout << "sigmaTotal = " << sigmaTotal << endl;
+
+sigmaT = (int2d(Th, 123)(R2 * real(Sr)));
+sigmaTotalMatrix(jrow) = sigmaT;
+cout << "sigmaTotalMatrix = " << sigmaTotalMatrix << endl;
+
+EpsI = 2*real(ns)*imag(ns);
+sigmaAbsorption = (int3d(Th) ( InInner() *(k0 * EpsI * (Ex * conj(Ex)  +   Ey * conj(Ey) +   Ez * conj(Ez)))));
+sigmaAbsorptionMatrix(jrow) = real(sigmaAbsorption);
+cout << "sigmaAbsorptionMatrix = " << sigmaAbsorptionMatrix << endl;		 
+
+
+cout << "k0 = " << k0 << endl;
+}
+
+ofstream file1("sigmaAbsorptionMatrixCopper.txt");
+file1<<sigmaAbsorptionMatrix;
+ofstream file2("sigmaTotalMatrixCopper.txt");
+file2<<sigmaTotalMatrix;
+ofstream file3("sortCopperWavelengthNKCopper.txt");
+file3<<sortCopperWavelengthNK;
+
+
+//ffSaveData(sigmaAbsorptionMatrix,"sigmaAbsorptionMatrix.txt");
+//ffSaveData(sigmaTotalMatrix,"sigmaTotalMatrix.txt");
+
+/*
+Vh realHz, realEy, realEx, realEx1;
+Vh<complex> HzInTime = 0.;
+Vh<complex> Ex1InTime = 0.;
+Vh<complex> E0=1.;
+Ex1InTime = Ex + (1. - InInner()) * Ex1;
+realEx1 = real(Ex1InTime);
+//Ex1InTime = outReg + 1i *0;
+
+///// save for the matlab
+savemesh(Th,"diffractionSInS3d.mesh");
+ffSaveVh(Th,Vh,"diffractionSInS3d_vh.txt");
+ffSaveData(Ey,"diffractionSInS3d_Ey.txt");
+ffSaveData(Ex1InTime,"diffractionSInS3d_Ex.txt");
+ffSaveData(SigmD,"diffractionSInS3d_SigmaD.txt");*/
+/////////////////////////
+
+/*
+Ex1InTime = Ex + (1. - InInner()) * Ex1;
+	realEx1 = real(Ex1InTime);
+plot(realEx1,wait=1,value=1);
+
+real dt = 2.* pi/ w / 20;
+for (int i=1; i < 100; i++)
+{
+    t = dt * i;
+    cout<< "Time is" << t << endl;
+
+	Ex1InTime = Ex * exp (1i*(w*t)) + (1. - InInner()) * (Ex1 * exp (1i*(w*t)));
+	realEx1 = real(Ex1InTime);
+	
+	plot(realEx1,wait=0,value=1);
+}
+*/
