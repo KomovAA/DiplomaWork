@@ -20,7 +20,7 @@ ns = 2.;
 // ns = 1.; // test - uniform media
 
 real lambda = 1.;        // vacuum wavelength (in 10*1e-6 m)
-real radiusOfInnerSpher = lambda / 4.;
+real radiusOfInnerSpher = lambda / 10.;
 
 real k0 = 2.* pi / lambda;
 complex k2 = k0 * ns;
