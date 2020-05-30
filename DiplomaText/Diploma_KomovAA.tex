@@ -88,8 +88,8 @@ colorlinks,  % цветные гиперссылки
 %\renewcommand{\subsectionfont}{\normalsize\bfseries}
 %\renewcommand{\subsubsectionfont}{\normalsize\bfseries}
 %\renewcommand{\tocprethechapter}{} % в оглавлении убираем слово "Глава"
-%\renewcommand{\theappendixalign}{\hfill} % выключка вправо для слова "приложение" в приложениии
-%\renewcommand{\theappendix}{\arabic{chapter}} % заменяем нумерацию приложений на цифры
+\renewcommand{\theappendixalign}{\hfill} % выключка вправо для слова "приложение" в приложениии
+\renewcommand{\theappendix}{\arabic{chapter}} % заменяем нумерацию приложений на цифры
 %\renewcommand{\pretheappendix}{\protect{ПРИЛОЖЕНИЕ}~} % Меняем регистр слова "Приложение"
 %\renewcommand{\tocpretheappendix}{\protect{ПРИЛОЖЕНИЕ}~} % Меняем регистр слова "Приложение"
 \renewcommand{\introname}{ВВЕДЕНИЕ}
@@ -140,7 +140,7 @@ colorlinks,  % цветные гиперссылки
 
 \title{ВЫПУСКНАЯ  КВАЛИФИКАЦИОННАЯ  РАБОТА}
 
-\topic{<<ИССЛЕДОВАНИЕ ОСОБЕННОСТЕЙ РАССЕЯНИЯ ЭЛЕКТРОМАГНИТНЫХ ВОЛН НА ФРАКТАЛЬНЫХ ОБЪЕКТАХ>>}
+\topic{ИССЛЕДОВАНИЕ ОСОБЕННОСТЕЙ РАССЕЯНИЯ ЭЛЕКТРОМАГНИТНЫХ ВОЛН НА ФРАКТАЛЬНЫХ ОБЪЕКТАХ}
 
 % Автор
 %\author{ФИО автора}
@@ -215,18 +215,22 @@ colorlinks,  % цветные гиперссылки
 % Заключение
 \input{concl}
 
+\newpage
 % Приложения
-%\appendix
+\appendix
 \input{a}
 \input{b}
+
+
 % Список литературы
-\printbibliography[heading=bibintoc]
-\begin{thebibliography}{99}	
-\bibitem{b1}  Kim Y. and Jaggard D.L. The Fractal Random Array.– Proc. of the IEEE, Sept. 1986, v.74, N 9, p.1278–1280.
-	
+%\printbibliography[heading=bibintoc]
+\begin{thebibliography}{99}		
 \bibitem{b11} Веселаго В.Г. Электродинамика материалов с отрицательным коэффициентом преломления. УФН, 2003. – 173. – В.3. – с. 790–794. 
 	
-\bibitem{b10} Yang X., Chiochetti J., Papadopoulos D. and Susman L. Fractal Antenna Elements and Arrays//Applied Microwave & Wireless. May 1999, p. 34–46.— http://www.amwireless. com/archives/1999/May1999/may1999-p34.pdf. 
+\bibitem{b1}  Kim Y. and Jaggard D.L. The Fractal Random Array.– Proc. of the IEEE, Sept. 1986, v.74, N 9, p.1278–1280.
+
+	
+\bibitem{b10} Yang X., Chiochetti J., Papadopoulos D. and Susman L. Fractal Antenna Elements and Arrays//Applied Microwave and Wireless. May 1999, p. 34–46
 	
 \bibitem{b8}  Puente C. Fractal Design of Multiband Antenna Arrays.– Elec. Eng. Dept. Univ. Illinois, Urbana-Champaign, ECE 477 term project, Dec.1993.
 	

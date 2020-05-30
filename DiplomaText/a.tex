@@ -1,7 +1,12 @@
+<<<<<<< HEAD
 \chapter{Код программы №1}
 \begin{center}
 	\textbf{fractalMadeOfSpheres#3.edp}
 \end{center}
+=======
+\chapter{Код программы для расчета сечений рассеяния и поглощения, структуры поля в случае рассеяния плоской волны на фрактальном объекте}
+
+>>>>>>> 4ae15d5d326c95d0e18f71e660066ead29da6cda
 \begin{lstlisting}[language=C]
 verbosity=1;
 load "msh3"
@@ -39,8 +44,8 @@ real step = lambda / 20.;
 real volumetetIn = (step^3)/6.;  
 //step = lambda / 2;
 
-//////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////// creating an inner spheres ///////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+//////////////////// creating an inner spheres ///////////////////////////////////
 ////// zero iteration
 meshS ThInnerSphere; //
 ThInnerSphere = Sphere(radiusOfInnerSpher,    step,   11, -1);
@@ -106,8 +111,8 @@ ThInnerSphere53 = movemeshS(ThInnerSphere53,transfo=[x - ddy,y - ddx,z]);
 ThS =  ThS + ThInnerSphere51 + ThInnerSphere53 + ThInnerSphere52;
 medit("Scatterer",ThS,wait=1);
 
-//////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////// creating an outer sphere ///////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
+///////////////////////////// creating an outer sphere //////////////////////////
 step = lambda / 2.;
 volumetet = (step^3)/6.;  
 meshS ThOuterSphere; // 
