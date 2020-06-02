@@ -331,124 +331,90 @@ H_{\rho}^{(s)}&\; \rho H_{\varphi}^{(s)}&\; H_{z}^{(s)}
 	\label{fig:sc2}
 \end{figure}
 Как видно из Рис. \ref{fig:sc1} и \ref{fig:sc2} при рассеянии плоской волны на цилиндре мы получили практически одинаковые значения поля в точках с точностью до фазы, не смотря на то, что вычисление производилось разными математическими методами, что в свою очередь показывает правильную постановку задачи и ее верное решение. \\ 
-Ниже приведены результаты численных расчётов сечения рассеяния и сечения поглощения для рассеивателей, состоящих из одного шара, пяти и семнадцати. Шары заполнены золотом \cite{Olmon2012}, серебром \cite{Yang2015}, либо медью \cite{Querry1985}. Для расчетов применяются оптические плотности материалов.\\
-С ростом частоты, происходит существенное уменьшению диапазона длин волн как для сечения поглощения (например \ref{fig:singleCopperSphereAbsorptionSection},  \ref{fig:singleSilverSphereAbsorptionSection}, \ref{fig:singleGoldSphereAbsorptionSection}), так и сечения рассеяния (например \ref{fig:singleCopperSphereAbsorptionSection}, \ref{fig:singleSilverSphereAbsorptionSection}, \ref{fig:singleGoldSphereAbsorptionSection}), для которого зависимость будет ближе к гиперболической. В частности графики (Рис. \ref{fig:singleCopperSphereCrossSection}, \ref{fig:singleSilverSphereCrossSection}, \ref{fig:singleGoldSphereCrossSection}) будут напоминать график гиперболического косеканса (Рис. \ref{fig:csch}), причем в дальнейшем при увеличении числа рассеивателей эта зависимость будет сохраняться, в случае с 5 сферами (Рис. \ref{fig:fiveCopperSphereCrossSection}, \ref{fig:fiveSilverSphereCrossSection}, \ref{fig:fiveGoldSphereCrossSection}) или 17 сферами (Рис. \ref{fig:seventeenCopperSphereCrossSection}, \ref{fig:seventeenSilverSphereCrossSection}, \ref{fig:seventeenGoldSphereCrossSection}). Получается, что для рассеяния волны требуется высокая частота, но лишь в ограниченном диапазоне длин волн, так как добиться отрицательного коэффициента преломления, можно лишь когда диэлектрическая проницаемость и магнитная восприимчивость так же будут отрицательными, однако верно это будет в небольшом диапазоне длин волн, что подтверждается теорией фрактальных антенн и метаматериалов представленной ранее. И если со вторым все более-менее понятно, то как можно объяснить требования высокой частоты? Чтобы добиться отрицательной реакции, необходимо подбирать частоты колебаний при использовании резонансной характеристики среды таким образом, чтобы силы, создаваемые электрическими и магнитными полями, воздействовали в противоположном направлении движению электронов. Так, если толкнуть качели, то они начнут двигаться с частотой собственных колебаний и подталкивая их с этой частотой мы будем входить в резонанс, тем самым увеличивать амплитуду. Если же мы начнем толкать их с более высокой частотой, то в какой-то момент наши толчки перестанут совпадать с колебаниями по фазе и рука ударится о движущиеся ей навстречу качели. Похожим образом ведут себя электроны, входящие в противофазу и начинающие сопротивляться "толчкам" электромагнитного поля.
-\begin{figure}[h!]
-	\centering
-	\includegraphics[width=0.32\linewidth]{csch}
-	\caption{y = csch (Гиперболический косеканс)}
-	\label{fig:csch}
-\end{figure}\\
-Увеличение элементов рассеивателя приводит расширению диапазона длин волн для сечения поглощения с одиночной сферой (Рис.\ref{fig:singleCopperSphereAbsorptionSection},\ref{fig:singleGoldSphereAbsorptionSection}),5 сферами (Рис.\ref{fig:fiveCopperSphereAbsorptionSection},\ref{fig:fiveGoldSphereAbsorptionSection}), и 17 сферами (Рис.\ref{fig:seventeenCopperSphereAbsorptionSection},\ref{fig:seventeenGoldSphereAbsorptionSection}) в случае если материал – медь и в меньшей степени если это золото, однако с каждой новой итерацией изменение менее значительно. Тоже самое нам говорит теория фрактальных антенн, увтерждающая, что весомый вклад вносят лишь пара первых итераций, которые называют кривыми, заполняющие пространство (Space Filling Curve) \cite{b12}\cite{b13}, а дальнейшее увеличение элементов не даст столь значительного эффекта.  В случае с серебром (Рис.\ref{fig:singleSilverSphereAbsorptionSection},\ref{fig:fiveSilverSphereAbsorptionSection},\ref{fig:seventeenSilverSphereAbsorptionSection}), это изменение очень мало и заметно лишь через одну итерацию. Для сечения рассеяния увеличение числа элементов существенных изменений не вносит. Так же стоит помнить, что уменьшая размер антенны (каждая новая итерация сфер меньше предыдущей в 2 раза), мы уменьшаем длину волны, для которой среда будет иметь отрицательный показатель преломления. \\
-Изменение материала рассеивателя приводит к изменению максимальной частоты и расширению/сужению диапазона длин волн в зависимости от того, какой материал был выбран. Так же исходя из теории стоит помнить, что чем больше мощности первичной волны будет поглощено в сечении поглощении материала, тем больше его будет преобразовано в тепло. Конечно, речь не идет о каких-то больших значениях, однако этот факт тоже стоит иметь ввиду.
-Из графиков (Рис. \ref{fig:singleCopperSphereAbsorptionSection} и \ref{fig:singleSilverSphereAbsorptionSection}, \ref{fig:fiveCopperSphereAbsorptionSection} и \ref{fig:fiveSilverSphereAbsorptionSection}, \ref{fig:seventeenCopperSphereAbsorptionSection} и \ref{fig:seventeenSilverSphereAbsorptionSection}) видно, что большее поглощение происходит на медной сфере, а меньшее на серебряной. Золотая сфера в это случае занимает промежуточную позицию. В случае с сечением рассеяния (Рис. \ref{fig:singleCopperSphereCrossSection} и \ref{fig:singleGoldSphereCrossSection}, \ref{fig:fiveCopperSphereCrossSection} и \ref{fig:fiveGoldSphereCrossSection}, \ref{fig:seventeenCopperSphereCrossSection} и \ref{fig:seventeenGoldSphereCrossSection}) медь и золото демонстрируют почти одинаковые результаты, однако у первого материала максимальная частота не много выше, серебро же (Рис. \ref{fig:singleSilverSphereCrossSection}, \ref{fig:fiveSilverSphereCrossSection}, \ref{fig:seventeenSilverSphereCrossSection}) показывает гораздо меньшие результаты. \\
-Из всего вышеперечисленного, можно сделать вывод, что для работы на более высоких частотах необходимо использовать более короткие длины волн определенного диапазона, а так же подбирать частоту колебаний при использовании резонансной характеристики среды. Для работы же на более длинных волнах требуется увеличить количество элементов рассеивателя или изменить материал, из которого они состоят.
+Ниже приведены результаты численных расчётов сечения рассеяния и сечения поглощения нормированные на квадрат длины волны в зависимости от длины падающей волны, и состоящие из одного шара, пяти и семнадцати. Шары заполнены золотом \cite{Olmon2012}, серебром \cite{Yang2015}, либо медью \cite{Querry1985}. Для расчетов применяются оптические плотности материалов. Здесь и далее зелёными кривыми отмечены результаты расчётов для золота, синим – серебра, красным – меди.
+
+%С ростом частоты, происходит существенное уменьшению диапазона длин волн как для сечения поглощения (например \ref{fig:singleCopperSphereAbsorptionSection},  \ref{fig:singleSilverSphereAbsorptionSection}, \ref{fig:singleGoldSphereAbsorptionSection}), так и сечения рассеяния (например \ref{fig:singleCopperSphereAbsorptionSection}, \ref{fig:singleSilverSphereAbsorptionSection}, \ref{fig:singleGoldSphereAbsorptionSection}), для которого зависимость будет ближе к гиперболической. В частности графики (Рис. \ref{fig:singleCopperSphereCrossSection}, \ref{fig:singleSilverSphereCrossSection}, \ref{fig:singleGoldSphereCrossSection}) будут напоминать график гиперболического косеканса (Рис. \ref{fig:csch}), причем в дальнейшем при увеличении числа рассеивателей эта зависимость будет сохраняться, в случае с 5 сферами (Рис. \ref{fig:fiveCopperSphereCrossSection}, \ref{fig:fiveSilverSphereCrossSection}, \ref{fig:fiveGoldSphereCrossSection}) или 17 сферами (Рис. \ref{fig:seventeenCopperSphereCrossSection}, \ref{fig:seventeenSilverSphereCrossSection}, \ref{fig:seventeenGoldSphereCrossSection}). Получается, что для рассеяния волны требуется высокая частота, но лишь в ограниченном диапазоне длин волн, так как добиться отрицательного коэффициента преломления, можно лишь когда диэлектрическая проницаемость и магнитная восприимчивость так же будут отрицательными, однако верно это будет в небольшом диапазоне длин волн, что подтверждается теорией фрактальных антенн и метаматериалов представленной ранее. И если со вторым все более-менее понятно, то как можно объяснить требования высокой частоты? Чтобы добиться отрицательной реакции, необходимо подбирать частоты колебаний при использовании резонансной характеристики среды таким образом, чтобы силы, создаваемые электрическими и магнитными полями, воздействовали в противоположном направлении движению электронов. Так, если толкнуть качели, то они начнут двигаться с частотой собственных колебаний и подталкивая их с этой частотой мы будем входить в резонанс, тем самым увеличивать амплитуду. Если же мы начнем толкать их с более высокой частотой, то в какой-то момент наши толчки перестанут совпадать с колебаниями по фазе и рука ударится о движущиеся ей навстречу качели. Похожим образом ведут себя электроны, входящие в противофазу и начинающие сопротивляться "толчкам" электромагнитного поля.
+%Увеличение элементов рассеивателя приводит расширению диапазона длин волн для сечения поглощения с одиночной сферой (Рис.\ref{fig:singleCopperSphereAbsorptionSection},\ref{fig:singleGoldSphereAbsorptionSection}),5 сферами (Рис.\ref{fig:fiveCopperSphereAbsorptionSection},\ref{fig:fiveGoldSphereAbsorptionSection}), и 17 сферами (Рис.\ref{fig:seventeenCopperSphereAbsorptionSection},\ref{fig:seventeenGoldSphereAbsorptionSection}) в случае если материал – медь и в меньшей степени если это золото, однако с каждой новой итерацией изменение менее значительно. Тоже самое нам говорит теория фрактальных антенн, увтерждающая, что весомый вклад вносят лишь пара первых итераций, которые называют кривыми, заполняющие пространство (Space Filling Curve) \cite{b12}\cite{b13}, а дальнейшее увеличение элементов не даст столь значительного эффекта.  В случае с серебром (Рис.\ref{fig:singleSilverSphereAbsorptionSection},\ref{fig:fiveSilverSphereAbsorptionSection},\ref{fig:seventeenSilverSphereAbsorptionSection}), это изменение очень мало и заметно лишь через одну итерацию. Для сечения рассеяния увеличение числа элементов существенных изменений не вносит. Так же стоит помнить, что уменьшая размер антенны (каждая новая итерация сфер меньше предыдущей в 2 раза), мы уменьшаем длину волны, для которой среда будет иметь отрицательный показатель преломления. \\
+%Изменение материала рассеивателя приводит к изменению максимальной частоты и расширению/сужению диапазона длин волн в зависимости от того, какой материал был выбран. Так же исходя из теории стоит помнить, что чем больше мощности первичной волны будет поглощено в сечении поглощении материала, тем больше его будет преобразовано в тепло. Конечно, речь не идет о каких-то больших значениях, однако этот факт тоже стоит иметь ввиду.
+%Из графиков (Рис. \ref{fig:singleCopperSphereAbsorptionSection} и \ref{fig:singleSilverSphereAbsorptionSection}, \ref{fig:fiveCopperSphereAbsorptionSection} и \ref{fig:fiveSilverSphereAbsorptionSection}, \ref{fig:seventeenCopperSphereAbsorptionSection} и \ref{fig:seventeenSilverSphereAbsorptionSection}) видно, что большее поглощение происходит на медной сфере, а меньшее на серебряной. Золотая сфера в это случае занимает промежуточную позицию. В случае с сечением рассеяния (Рис. \ref{fig:singleCopperSphereCrossSection} и \ref{fig:singleGoldSphereCrossSection}, \ref{fig:fiveCopperSphereCrossSection} и \ref{fig:fiveGoldSphereCrossSection}, \ref{fig:seventeenCopperSphereCrossSection} и \ref{fig:seventeenGoldSphereCrossSection}) медь и золото демонстрируют почти одинаковые результаты, однако у первого материала максимальная частота не много выше, серебро же (Рис. \ref{fig:singleSilverSphereCrossSection}, \ref{fig:fiveSilverSphereCrossSection}, \ref{fig:seventeenSilverSphereCrossSection}) показывает гораздо меньшие результаты. \\
+%Из всего вышеперечисленного, можно сделать вывод, что для работы на более высоких частотах необходимо использовать более короткие длины волн определенного диапазона, а так же подбирать частоту колебаний при использовании резонансной характеристики среды. Для работы же на более длинных волнах требуется увеличить количество элементов рассеивателя или изменить материал, из которого они состоят.
+Как можно видеть, увеличение сложности конфигурации рассеивателя приводит к возрастанию как сечения поглощения (Рис. \ref{fig:absorpForONE}, \ref{fig:absorpForFIVE}, \ref{fig:absorpForSEVENTEEN}), так и сечения рассеяния(Рис. \ref{fig:scatForONE}, \ref{fig:scatForFIVE}, \ref{fig:scatForSEVENTEEN}). Это лучше всего
+просматривается при сравнении одиночного шара и рассеивателя «первой итерации», однако с каждой последующей итерацией это изменение менее значительно. Разница между приведёнными величинами для рассеивателя «первой итерации» (Рис. \ref{fig:absorpForFIVE} и \ref{fig:scatForFIVE}) и рассеивателя «второй итерации» (Рис. \ref{fig:absorpForSEVENTEEN} и \ref{fig:scatForSEVENTEEN}) не столь ярко выражена. При этом, как сечение поглощения, так и сечение рассеяния будут наименьшие для рассеивателей, составленных из серебра.
+ 
+Так же из полученных графиков видно, что увеличение сложности рассеивателя приводит к увеличению сечения рассеяния для всех сред и всех длин волн (Рис. \ref{fig:scatForCopper}, \ref{fig:scatForSilver}, \ref{fig:scatForGold}), за исключением небольшого интервала в оптической области частот для серебряных рассеивателей в котором семнадцать шаров имеют меньшее сечение рассеяния, чем пять шаров (Рис. \ref{fig:scatForSilver}). В тоже время, сечения поглощения для всех материалов в инфракрасной области частот возрастает с увеличением числа элементов рассеивателя, а в оптической области сечение поглощения рассеивателя «второй итерации» уменьшается по сравнению с сечением поглощения рассеивателя «первой итерации»(Рис. \ref{fig:absorpForCopper}, \ref{fig:absorpForSilver}, \ref{fig:absorpForGold}).
+При этом, как видно из рисунков для серебра и золота, локальный минимум зависимости сечения поглощения от длины волны смещается в сторону больших длин волн с увеличением сложности рассеивателя.
+Из всего вышеперечисленного, можно сделать вывод, что для работы на более высоких частотах необходимо использовать более короткие длины волн определенного диапазона. Для работы же на более длинных волнах требуется увеличить количество элементов рассеивателя или изменить материал, из которого они состоят.
 
 \begin{figure}[h!]
 	\centering
-	\includegraphics[width=0.5\linewidth]{singleCopperSphereAbsorptionSection}
-	\caption{Поглощение на одиночной медной сфере}
-	\label{fig:singleCopperSphereAbsorptionSection}
-\end{figure}
-\begin{figure}[h!]
-	\centering
-	\includegraphics[width=0.5\linewidth]{singleCopperSphereCrossSection}
-	\caption{Рассеяние на одиночной медной сфере}
-	\label{fig:singleCopperSphereCrossSection}
-\end{figure}
-\begin{figure}[h!]
-	\centering
-	\includegraphics[width=0.5\linewidth]{singleGoldSphereAbsorptionSection}
-	\caption{Поглощение на одиночной золотой сфере}
-	\label{fig:singleGoldSphereAbsorptionSection}
-\end{figure}
-\begin{figure}[h!]
-	\centering
-	\includegraphics[width=0.5\linewidth]{singleGoldSphereCrossSection}
-	\caption{Рассеяние на одиночной золотой сфере}
-	\label{fig:singleGoldSphereCrossSection}
-\end{figure}
-\begin{figure}[h!]
-	\centering
-	\includegraphics[width=0.5\linewidth]{singleSilverSphereAbsorptionSection}
-	\caption{Поглощение на одиночной серебряной сфере}
-	\label{fig:singleSilverSphereAbsorptionSection}
-\end{figure}
-\begin{figure}[h!]
-	\centering
-	\includegraphics[width=0.5\linewidth]{singleSilverSphereCrossSection}
-	\caption{Рассеяние на одиночной серебряной сфере}
-	\label{fig:singleSilverSphereCrossSection}
-\end{figure}
-\begin{figure}[h!]
-	\centering
-	\includegraphics[width=0.5\linewidth]{fiveCopperSphereAbsorptionSection}
-	\caption{Поглощение на 5 медных сферах}
-	\label{fig:fiveCopperSphereAbsorptionSection}
-\end{figure}
-\begin{figure}[h!]
-	\centering
-	\includegraphics[width=0.5\linewidth]{fiveCopperSphereCrossSection}
-	\caption{Рассеяние на 5 медных сферах}
-	\label{fig:fiveCopperSphereCrossSection}
+	\includegraphics[width=0.8\linewidth]{absorpForONE}
+	\caption{Сечение поглощения для одного шара в разных средах}
+	\label{fig:absorpForONE}
 \end{figure} 
 \begin{figure}[h!]
 	\centering
-	\includegraphics[width=0.5\linewidth]{fiveGoldSphereAbsorptionSection}
-	\caption{Поглощение на 5 золотых сферах}
-	\label{fig:fiveGoldSphereAbsorptionSection}
+	\includegraphics[width=0.8\linewidth]{scatForONE}
+	\caption{Сечение рассеяния для одного шара в разных средах}
+	\label{fig:scatForONE}
+\end{figure} 
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.8\linewidth]{absorpForFIVE}
+	\caption{Сечение поглощения для пяти шаров в разных средах}
+	\label{fig:absorpForFIVE}
+\end{figure} 
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.8\linewidth]{scatForFIVE}
+	\caption{Сечение рассеяния для пяти шаров в разных средах}
+	\label{fig:scatForFIVE}
+\end{figure} 
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.8\linewidth]{absorpForSEVENTEEN}
+	\caption{Сечение поглощения для семнадцати шаров в разных средах}
+	\label{fig:absorpForSEVENTEEN}
 \end{figure}
 \begin{figure}[h!]
 	\centering
-	\includegraphics[width=0.5\linewidth]{fiveGoldSphereCrossSection}
-	\caption{Рассеяние на 5 золотых сферах}
-	\label{fig:fiveGoldSphereCrossSection}
+	\includegraphics[width=0.8\linewidth]{scatForSEVENTEEN}
+	\caption{Сечение рассеяния для семнадцати шаров в разных средах}
+	\label{fig:scatForSEVENTEEN}
+\end{figure} 
+
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.8\linewidth]{absorpForCopper}
+	\caption{Сечение поглощения для медных шаров}
+	\label{fig:absorpForCopper}
 \end{figure}
 \begin{figure}[h!]
 	\centering
-	\includegraphics[width=0.5\linewidth]{fiveSilverSphereAbsorptionSection}
-	\caption{Поглощение на 5 серебряных сферах}
-	\label{fig:fiveSilverSphereAbsorptionSection}
+	\includegraphics[width=0.8\linewidth]{scatForCopper}
+	\caption{Сечение рассеяния для медных шаров}
+	\label{fig:scatForCopper}
 \end{figure} 
 \begin{figure}[h!]
 	\centering
-	\includegraphics[width=0.5\linewidth]{fiveSilverSphereCrossSection}
-	\caption{Рассеяние на 5 серебряных сферах}
-	\label{fig:fiveSilverSphereCrossSection}
-\end{figure} 
-\begin{figure}[h!]
-	\centering
-	\includegraphics[width=0.5\linewidth]{seventeenCopperSphereAbsorptionSection}
-	\caption{Поглощение на 17 медных сферах}
-	\label{fig:seventeenCopperSphereAbsorptionSection}
-\end{figure} 
-\begin{figure}[h!]
-	\centering
-	\includegraphics[width=0.5\linewidth]{seventeenCopperSphereCrossSection}
-	\caption{Рассеяние на 17 медных сферах}
-	\label{fig:seventeenCopperSphereCrossSection}
+	\includegraphics[width=0.8\linewidth]{absorpForSilver}
+	\caption{Сечение поглощения для серебряных шаров}
+	\label{fig:absorpForSilver}
 \end{figure}
 \begin{figure}[h!]
 	\centering
-	\includegraphics[width=0.5\linewidth]{seventeenGoldSphereAbsorptionSection}
-	\caption{Поглощение на 17 золотых сферах}
-	\label{fig:seventeenGoldSphereAbsorptionSection}
+	\includegraphics[width=0.8\linewidth]{scatForSilver}
+	\caption{Сечение рассеяния для серебряных шаров}
+	\label{fig:scatForSilver}
 \end{figure} 
 \begin{figure}[h!]
 	\centering
-	\includegraphics[width=0.5\linewidth]{seventeenGoldSphereCrossSection}
-	\caption{Рассеяние на 17 золотых сферах}
-	\label{fig:seventeenGoldSphereCrossSection}
+	\includegraphics[width=0.8\linewidth]{absorpForGold}
+	\caption{Сечение поглощения для золотых шаров}
+	\label{fig:absorpForGold}
 \end{figure}
 \begin{figure}[h!]
 	\centering
-	\includegraphics[width=0.5\linewidth]{seventeenSilverSphereAbsorptionSection}
-	\caption{Поглощение на 17 серебряных сферах}
-	\label{fig:seventeenSilverSphereAbsorptionSection}
+	\includegraphics[width=0.8\linewidth]{scatForGold}
+	\caption{Сечение рассеяния для золотых шаров}
+	\label{fig:scatForGold}
 \end{figure} 
-\begin{figure}[h!]
-	\centering
-	\includegraphics[width=0.5\linewidth]{seventeenSilverSphereCrossSection}
-	\caption{Рассеяние на 17 серебряных сферах}
-	\label{fig:seventeenSilverSphereCrossSection}
-\end{figure} \\
